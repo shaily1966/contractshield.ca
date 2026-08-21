@@ -1,993 +1,935 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-CA">
 <head>
-  <title>ContractShield – Canadian Legal Contract Intelligence for Lawyers & Paralegals</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Canadian legal contract intelligence — AI review backed by a tested statutory rule engine covering all 13 provinces and territories. Built for solo lawyers, paralegals, and small firms.">
-  <meta property="og:title" content="ContractShield – AI Contract Review for Canadian Law">
-  <meta property="og:description" content="Canadian legal contract intelligence for lawyers and paralegals — deterministic statutory rules plus AI, with true Word track changes.">
-  <meta property="og:url" content="https://contractshield.ca">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://contractshield.ca/og-image.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Instrument+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ContractShield — Ontario statutory contract review</title>
+<meta name="description" content="Ninety-five Ontario statutory rules run on your own machine before any model sees the contract. Every finding cites its provision. And it states what it did not check."/>
+<meta property="og:title" content="ContractShield — Ontario statutory contract review"/>
+<meta property="og:description" content="Findings that cite the provision. Runs on your machine. States what it did not check."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://contractshield.ca"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN NOTE
 
-  <style>
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
-    html { scroll-behavior:smooth; }
+   The device this page borrows is the marginal section number: in
+   a consolidated Ontario statute the provision reference sits in
+   the left margin beside the text it governs. That rail is the
+   page's signature, and it is honest rather than decorative — the
+   entire claim of the product is that every finding cites its
+   provision, so citations belong in the margin, exactly where a
+   lawyer's eye already looks for them.
 
-    :root {
-      --bg:       #0b0c10;
-      --bg2:      #11131a;
-      --bg3:      #181b25;
-      --bg4:      #1e2130;
-      --gold:     #c9a84c;
-      --gold-lt:  #e2c47a;
-      --gold-dk:  #9a7530;
-      --silver:   #8a94b0;
-      --text:     #dde2f0;
-      --muted:    #5a6380;
-      --border:   rgba(255,255,255,0.07);
-      --border2:  rgba(201,168,76,0.2);
-      --red:      #c0392b;
-      --amber:    #e67e22;
-      --radius:   8px;
-      --ff-head:  'Cormorant Garamond', Georgia, serif;
-      --ff-body:  'Instrument Sans', system-ui, sans-serif;
-      --ff-mono:  'DM Mono', monospace;
-    }
+   Citations are set in mono throughout. A citation is a reference
+   rather than prose; setting it as such makes it scannable and
+   stops it competing with the sentence it supports.
 
-    body { background:var(--bg); color:var(--text); font-family:var(--ff-body); font-size:17px; line-height:1.65; overflow-x:hidden; }
-    a { text-decoration:none; color:inherit; }
-    .container { max-width:1140px; margin:0 auto; padding:0 28px; }
+   The palette is a bound volume: board, paper, a cool field grey,
+   statute green used only where a finding is verifiable, and gilt
+   used at most once per screen.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --ink:#0e1216;
+  --ink-soft:#3a424b;
+  --paper:#ffffff;
+  --field:#fafafa;        /* barely there — chips and one panel only */
+  --rule:#e6e8e8;         /* hairline: the separator, in place of fills */
+  --rule-strong:#c9cdcd;  /* section boundary */
+  --statute:#0f5132;
+  --statute-tint:#e9f1ed;
+  --gilt:#a67c2e;         /* display accent and hairlines */
+  --gilt-deep:#7d5c1f;    /* the same accent where the type is small */
+  --flag:#8f2b2b;
 
-    /* Texture */
-    body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:0; }
-    section, header, footer { position:relative; z-index:1; }
+  --display:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --body:"Source Serif 4",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 
-    /* Utilities */
-    .label { display:inline-block; font-family:var(--ff-mono); font-size:11px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
-    h2 { font-family:var(--ff-head); font-size:clamp(32px,4.5vw,54px); font-weight:700; color:#fff; letter-spacing:-0.5px; line-height:1.1; }
-    h3 { font-family:var(--ff-head); font-size:clamp(20px,2.5vw,26px); font-weight:700; color:#fff; margin-bottom:10px; line-height:1.2; }
-    .section-sub { color:var(--silver); font-size:18px; max-width:560px; margin-top:14px; line-height:1.7; }
+  --rail:132px;
+  --gap:44px;
+  --max:1080px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--body);font-size:17.5px;line-height:1.7;font-weight:400;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+::selection{background:var(--statute-tint)}
 
-    /* Buttons */
-    .btn { display:inline-block; font-family:var(--ff-body); font-weight:600; font-size:16px; padding:14px 32px; border-radius:var(--radius); transition:all .2s; cursor:pointer; letter-spacing:.2px; }
-    .btn-gold { background:var(--gold); color:#0b0c10; }
-    .btn-gold:hover { background:var(--gold-lt); transform:translateY(-1px); box-shadow:0 8px 24px rgba(201,168,76,0.3); }
-    .btn-outline-gold { border:1.5px solid var(--border2); color:var(--gold); background:transparent; }
-    .btn-outline-gold:hover { background:rgba(201,168,76,0.06); border-color:var(--gold); }
-    .btn-outline-silver { border:1.5px solid var(--border); color:var(--silver); background:transparent; }
-    .btn-outline-silver:hover { border-color:rgba(255,255,255,0.2); color:#fff; }
+/* ── The rail ───────────────────────────────────────────────── */
+.sheet{max-width:var(--max);margin:0 auto;padding:0 32px}
+.row{display:grid;grid-template-columns:var(--rail) 1fr;gap:var(--gap)}
+.row > .margin{
+  font-family:var(--mono);font-size:11.5px;line-height:1.6;letter-spacing:.02em;
+  color:var(--ink-soft);text-align:right;padding-top:9px;
+  border-right:1px solid var(--rule);padding-right:var(--gap);
+  margin-right:calc(var(--gap) * -1);
+}
+.row > .margin .n{display:block;color:var(--gilt-deep);font-weight:600;
+  font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
+.row > .margin .cite{display:block;margin-top:5px;color:var(--ink-soft)}
 
-    /* Nav */
-    header { position:sticky; top:0; z-index:200; background:rgba(11,12,16,0.9); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
-    .nav-inner { display:flex; align-items:center; justify-content:space-between; height:66px; }
-    .logo { font-family:var(--ff-head); font-size:24px; font-weight:700; color:#fff; letter-spacing:-0.5px; }
-    .logo span { color:var(--gold); }
-    .nav-links { display:flex; align-items:center; gap:4px; }
-    .nav-links a { color:var(--silver); font-size:14px; font-weight:500; padding:7px 14px; border-radius:6px; transition:all .2s; }
-    .nav-links a:hover { color:#fff; background:rgba(255,255,255,0.05); }
-    .nav-cta-gold { background:var(--gold) !important; color:#0b0c10 !important; font-weight:700 !important; margin-left:4px; }
-    .nav-cta-gold:hover { background:var(--gold-lt) !important; }
-    .nav-cta-outline { border:1px solid var(--border2) !important; color:var(--gold) !important; margin-left:4px; }
-    .nav-cta-outline:hover { background:rgba(201,168,76,0.08) !important; }
+.band{padding:96px 0;border-top:1px solid var(--rule-strong)}
+.band--field{background:var(--paper)}   /* retained for markup stability */
+.band--ink{background:var(--ink);color:#e8ebe9;border-top:none;
+  padding:108px 0}
+.band--ink .row > .margin{color:#8d9a94;border-right-color:#252d33}
+.band--ink .row > .margin .n{color:var(--gilt)}
+.band--ink h2{color:#fff}
+.band--ink a{color:#cbb27c}
 
-    /* Hero */
-    .hero { padding:110px 0 90px; position:relative; overflow:hidden; }
-    .hero-glow { position:absolute; top:-150px; left:50%; transform:translateX(-50%); width:1000px; height:600px; background:radial-gradient(ellipse, rgba(201,168,76,0.08) 0%, transparent 65%); pointer-events:none; }
-    .hero-inner { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+/* ── Type ───────────────────────────────────────────────────── */
+h1,h2,h3{font-family:var(--display);font-weight:400;letter-spacing:-.005em}
+h1{font-size:clamp(40px,6.2vw,68px);line-height:1.04;margin:0 0 26px}
+h1 em{font-style:italic;color:var(--gilt)}
+h2{font-size:clamp(27px,3.4vw,38px);line-height:1.14;margin:0 0 18px}
+h3{font-family:var(--body);font-weight:600;font-size:17px;line-height:1.4;
+  margin:0 0 7px;letter-spacing:0}
+p{margin:0 0 18px;max-width:62ch}
+.lede{font-size:21px;line-height:1.58;color:var(--ink-soft);max-width:56ch}
+.band--ink .lede{color:#b8c2bd}
+.fine{font-size:15px;line-height:1.65;color:var(--ink-soft)}
+strong{font-weight:600}
 
-    .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(201,168,76,0.08); border:1px solid var(--border2); color:var(--gold-lt); font-family:var(--ff-mono); font-size:11px; font-weight:500; padding:7px 16px; border-radius:100px; margin-bottom:30px; letter-spacing:1px; text-transform:uppercase; }
-    .hero-badge::before { content:''; width:7px; height:7px; background:var(--gold); border-radius:50%; animation:pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+/* ── Nav ────────────────────────────────────────────────────── */
+nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(160%) blur(8px);border-bottom:1px solid var(--rule)}
+nav .sheet{display:flex;align-items:center;justify-content:space-between;
+  height:60px}
+.brand{font-family:var(--display);font-size:21px;color:var(--ink);
+  text-decoration:none;letter-spacing:-.01em}
+.brand span{color:var(--gilt)}
+.navlinks{display:flex;gap:26px;font-family:var(--mono);font-size:11.5px;
+  letter-spacing:.06em;text-transform:uppercase}
+.navlinks a{color:var(--ink-soft);text-decoration:none;padding:4px 0;
+  border-bottom:1px solid transparent}
+.navlinks a:hover{color:var(--ink);border-bottom-color:var(--gilt)}
+@media(max-width:820px){.navlinks{display:none}}
 
-    h1 { font-family:var(--ff-head); font-size:clamp(40px,6vw,72px); font-weight:700; color:#fff; letter-spacing:-1.5px; line-height:1.05; margin-bottom:24px; }
-    h1 em { font-style:italic; color:var(--gold); }
+/* ── Buttons ────────────────────────────────────────────────── */
+.btn{display:inline-block;font-family:var(--mono);font-size:12.5px;
+  letter-spacing:.06em;text-transform:uppercase;font-weight:500;
+  padding:14px 26px;text-decoration:none;border:1px solid var(--ink);
+  margin:0 10px 10px 0;transition:background .16s,color .16s,transform .1s}
+.btn--solid{background:var(--ink);color:#fff}
+.btn--solid:hover{background:#000}
+.btn--line{color:var(--ink);background:transparent}
+.btn--line:hover{background:var(--ink);color:#fff}
+.btn:active{transform:translateY(1px)}
+.band--ink .btn--solid{background:#fff;color:var(--ink);border-color:#fff}
+.band--ink .btn--line{color:#fff;border-color:#4a555c}
+.band--ink .btn--line:hover{background:#fff;color:var(--ink)}
+:focus-visible{outline:2px solid var(--gilt);outline-offset:3px}
 
-    .hero-sub { font-size:18px; color:var(--silver); max-width:500px; line-height:1.75; margin-bottom:40px; }
+/* ── The specimen: a finding as it actually appears ─────────── */
+.specimen{background:var(--paper);border:1px solid var(--rule);
+  box-shadow:0 1px 2px rgba(14,18,22,.04),
+             0 8px 18px -12px rgba(14,18,22,.16),
+             0 34px 60px -40px rgba(14,18,22,.42)}
+.specimen__head{display:flex;justify-content:space-between;align-items:center;
+  padding:13px 22px;border-bottom:1px solid var(--rule);background:var(--field);
+  gap:16px}
 
-    .hero-ctas { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-    .hero-divider { color:var(--muted); font-size:13px; padding:0 4px; }
-    .hero-note { font-family:var(--ff-mono); font-size:12px; color:var(--muted); margin-top:16px; letter-spacing:.5px; }
+.specimen__head .doc{font-family:var(--mono);font-size:11.5px;
+  color:var(--ink-soft);letter-spacing:.03em}
+.specimen__head .verdict{font-family:var(--mono);font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--flag);
+  font-weight:600;white-space:nowrap}
+.item{padding:19px 22px;border-bottom:1px solid var(--rule)}
+.item:last-child{border-bottom:none}
+.tags{margin-bottom:9px}
+.tag{display:inline-block;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:600;
+  padding:3px 8px;margin-right:6px;border:1px solid}
+.tag--stat{color:var(--statute);border-color:#bcd5c8;background:var(--statute-tint)}
+.tag--ai{color:var(--ink-soft);border-color:var(--rule);background:var(--field)}
+.tag--crit{color:var(--flag);border-color:#e3c4c4;background:#fbf2f2}
+.item p{font-size:15.5px;line-height:1.6;color:var(--ink-soft);margin:0;
+  max-width:none}
+.item .prov{font-family:var(--mono);font-size:11.5px;color:var(--statute);
+  margin-top:9px;display:block}
+.item .prov--none{color:var(--ink-soft)}
 
-    /* Trust pills */
-    .hero-trust { display:flex; flex-wrap:wrap; gap:20px; margin-top:44px; }
-    .trust-pill { display:flex; align-items:center; gap:8px; color:var(--silver); font-size:14px; }
-    .trust-pill svg { color:var(--gold); flex-shrink:0; }
+/* ── Packs: the rule inventory ──────────────────────────────── */
+.pack{padding:22px 0;border-top:1px solid var(--rule)}
+.pack:last-of-type{border-bottom:1px solid var(--rule)}
+.pack__top{display:flex;justify-content:space-between;align-items:baseline;
+  gap:20px;margin-bottom:9px}
+.pack__top h3{margin:0;font-size:18px}
+.pack__n{font-family:var(--mono);font-size:11.5px;color:var(--gilt-deep);
+  font-weight:600;letter-spacing:.08em;white-space:nowrap}
+.pack p{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-soft);
+  max-width:70ch}
+.pack .s{font-family:var(--mono);font-size:13px;color:var(--ink);
+  background:var(--field);border:1px solid var(--rule);
+  padding:1px 6px;white-space:nowrap}
 
-    /* Sample output card */
-    .sample-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,0.5); }
-    .sample-card-hdr { background:var(--bg3); border-bottom:1px solid var(--border); padding:14px 20px; display:flex; align-items:center; gap:8px; }
-    .sample-dot { width:11px; height:11px; border-radius:50%; }
-    .sample-card-title { font-family:var(--ff-mono); font-size:12px; color:var(--silver); margin-left:8px; }
-    .sample-body { padding:20px; }
-    .sample-score { display:flex; align-items:center; gap:14px; background:rgba(192,57,43,0.08); border:1px solid rgba(192,57,43,0.2); border-radius:8px; padding:14px 18px; margin-bottom:14px; }
-    .sample-score-num { font-family:var(--ff-head); font-size:40px; font-weight:700; color:#ff6b6b; line-height:1; }
-    .sample-score-label { font-size:13px; color:var(--silver); }
-    .sample-score-label strong { display:block; color:#fff; font-size:15px; margin-bottom:2px; }
-    .sample-clause { background:var(--bg3); border-radius:8px; padding:12px 14px; margin-bottom:8px; border-left:3px solid transparent; }
-    .sample-clause.high { border-left-color:#ff6b6b; }
-    .sample-clause.med  { border-left-color:var(--amber); }
-    .sample-clause.ok   { border-left-color:#6fcf97; }
-    .sample-clause-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
-    .sample-clause-name { font-family:var(--ff-mono); font-size:12px; font-weight:500; color:#fff; }
-    .risk-pill { font-size:10px; font-weight:600; padding:2px 8px; border-radius:100px; }
-    .risk-high { background:rgba(255,107,107,0.15); color:#ff6b6b; }
-    .risk-med  { background:rgba(230,126,34,0.15);  color:var(--amber); }
-    .risk-ok   { background:rgba(111,207,151,0.12); color:#6fcf97; }
-    .sample-clause p { font-size:12px; color:var(--silver); line-height:1.5; }
+/* ── Quote block ────────────────────────────────────────────── */
+.quoted{border-left:2px solid var(--statute);padding:4px 0 4px 26px;
+  margin:26px 0;max-width:60ch}
+.quoted p{font-size:17px;color:var(--ink);margin-bottom:14px}
+.quoted p:last-child{margin-bottom:0}
 
-    /* Disruption bar */
-    .disruption { padding:56px 0; background:var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-    .dis-label { text-align:center; font-family:var(--ff-mono); font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-bottom:36px; }
-    .dis-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; }
-    .di { background:var(--bg3); padding:28px 20px; text-align:center; }
-    .di:first-child { border-radius:var(--radius) 0 0 var(--radius); }
-    .di:last-child { border-radius:0 var(--radius) var(--radius) 0; }
-    .di-who { font-family:var(--ff-mono); font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
-    .di-old { font-family:var(--ff-head); font-size:26px; font-weight:700; color:rgba(255,255,255,0.25); text-decoration:line-through; text-decoration-color:rgba(192,57,43,0.6); margin-bottom:6px; }
-    .di-new { font-family:var(--ff-head); font-size:30px; font-weight:700; color:var(--gold); }
-    .di-desc { font-family:var(--ff-mono); font-size:11px; color:var(--muted); margin-top:6px; }
+/* ── Three ways in ──────────────────────────────────────────── */
+.ways{display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+  border:1px solid var(--rule);background:var(--paper)}
+.way{padding:26px 24px;border-right:1px solid var(--rule)}
+.way:last-child{border-right:none}
+.way__n{font-family:var(--mono);font-size:10.5px;color:var(--gilt-deep);
+  letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:11px}
+.way p{font-size:15px;line-height:1.62;color:var(--ink-soft);margin:0;
+  max-width:none}
+@media(max-width:820px){
+  .ways{grid-template-columns:1fr}
+  .way{border-right:none;border-bottom:1px solid var(--rule)}
+  .way:last-child{border-bottom:none}
+}
 
-    /* Features — consumer */
-    .features { padding:90px 0; }
-    .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:52px; }
-    .feature-card { background:var(--bg2); padding:36px 30px; transition:background .2s; border:1px solid transparent; }
-    .feature-card:hover { background:var(--bg3); border-color:var(--border); }
-    .feature-card:first-child { border-radius:var(--radius) 0 0 var(--radius); }
-    .feature-card:last-child  { border-radius:0 var(--radius) var(--radius) 0; }
-    .feature-num { font-family:var(--ff-mono); font-size:11px; color:var(--gold); letter-spacing:2px; margin-bottom:18px; }
-    .feature-card h3 { font-size:20px; margin-bottom:10px; }
-    .feature-card p { color:var(--silver); font-size:15px; line-height:1.7; }
+/* ── Comparison ─────────────────────────────────────────────── */
+table{width:100%;border-collapse:collapse;font-size:15px}
+thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-soft);font-weight:600;
+  text-align:left;padding:0 14px 11px 0;border-bottom:1px solid var(--rule)}
+td{padding:14px 14px 14px 0;border-bottom:1px solid var(--rule);
+  vertical-align:top;line-height:1.5}
+td:first-child{color:var(--ink);width:38%}
+.y{color:var(--statute);font-weight:600}
+.n{color:var(--ink-soft)}
 
-    /* Canadian compliance */
-    .canadian { padding:90px 0; background:var(--bg2); }
-    .canadian-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:start; margin-top:52px; }
-    .ca-rule { display:flex; gap:16px; padding:18px 0; border-bottom:1px solid var(--border); }
-    .ca-rule:first-child { border-top:1px solid var(--border); }
-    .ca-badge { background:rgba(201,168,76,0.1); border:1px solid var(--border2); color:var(--gold); font-family:var(--ff-mono); font-size:10px; font-weight:500; padding:4px 8px; border-radius:4px; white-space:nowrap; flex-shrink:0; height:fit-content; margin-top:2px; }
-    .ca-rule h4 { font-size:15px; font-weight:600; color:#fff; margin-bottom:3px; font-family:var(--ff-body); }
-    .ca-rule p { font-size:13px; color:var(--silver); line-height:1.5; }
-    .ca-stats { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-    .ca-stat { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); padding:24px; text-align:center; }
-    .ca-stat-num { font-family:var(--ff-head); font-size:42px; font-weight:700; color:var(--gold); line-height:1; margin-bottom:8px; }
-    .ca-stat-label { color:var(--silver); font-size:13px; line-height:1.5; }
+/* ── Pricing ────────────────────────────────────────────────── */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+  border:1px solid var(--rule);background:var(--paper)}
+.tier{padding:30px 26px;border-right:1px solid var(--rule)}
+.tier:last-child{border-right:none}
+.tier--mark{background:var(--field);box-shadow:inset 0 2px 0 var(--gilt)}
+.tier__label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:14px}
+.tier__price{font-family:var(--display);font-size:44px;line-height:1;
+  display:block;margin-bottom:4px}
+.tier__unit{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);
+  display:block;margin-bottom:16px}
+.tier p{font-size:15px;line-height:1.6;color:var(--ink-soft);margin:0;
+  max-width:none}
+@media(max-width:820px){
+  .tiers{grid-template-columns:1fr}
+  .tier{border-right:none;border-bottom:1px solid var(--rule)}
+  .tier:last-child{border-bottom:none}
+}
 
-    /* ═══════════════════════════════════════════════
-       LAW FIRM SECTION — completely different tone
-    ═══════════════════════════════════════════════ */
-    .firm-divider {
-      padding:72px 0;
-      text-align:center;
-      background:var(--bg);
-      border-top:1px solid var(--border);
-      border-bottom:1px solid var(--border2);
-    }
-    .firm-divider-inner {
-      max-width:700px;
-      margin:0 auto;
-    }
-    .firm-divider h2 {
-      font-size:clamp(28px,4vw,48px);
-      margin-bottom:16px;
-    }
-    .firm-divider p {
-      color:var(--silver);
-      font-size:18px;
-      line-height:1.7;
-      margin-bottom:32px;
-    }
+/* ── Questions ──────────────────────────────────────────────── */
+details{border-bottom:1px solid var(--rule)}
+details summary{cursor:pointer;list-style:none;padding:19px 0;
+  font-family:var(--body);font-weight:600;font-size:17px;
+  display:flex;gap:16px;align-items:baseline}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"§";font-family:var(--mono);color:var(--gilt-deep);
+  font-size:14px;flex:none;transition:transform .18s}
+details[open] summary::before{transform:rotate(90deg)}
+details p{margin:0 0 20px 30px;color:var(--ink-soft);font-size:16.5px;
+  max-width:62ch}
 
-    /* Firm hero */
-    .firm-hero {
-      padding:90px 0;
-      background:linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
-      border-bottom:1px solid var(--border);
-    }
-    .firm-hero-inner { display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:center; }
-    .firm-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(201,168,76,0.06); border:1px solid var(--border2); color:var(--gold); font-family:var(--ff-mono); font-size:11px; padding:6px 14px; border-radius:100px; margin-bottom:28px; letter-spacing:1.5px; text-transform:uppercase; }
-    .firm-headline { font-family:var(--ff-head); font-size:clamp(36px,5vw,60px); font-weight:700; color:#fff; letter-spacing:-1px; line-height:1.06; margin-bottom:24px; }
-    .firm-headline em { font-style:italic; color:var(--gold); }
-    .firm-sub { font-size:18px; color:var(--silver); line-height:1.75; margin-bottom:36px; max-width:480px; }
-    .firm-cta-group { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-    .firm-note { font-family:var(--ff-mono); font-size:12px; color:var(--muted); margin-top:16px; letter-spacing:.4px; }
+footer{background:var(--ink);color:#8d9a94;padding:56px 0 72px;font-size:14.5px}
+footer .brand{color:#fff}
+footer a{color:#cbb27c}
+footer p{max-width:70ch}
+footer .row > .margin{color:#8d9a94;border-right-color:#252d33}
+footer .row > .margin .n{color:var(--gilt)}
 
-    /* Firm output modes */
-    .firm-modes { padding:90px 0; background:var(--bg2); }
-    .modes-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:52px; }
-    .mode-card { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:36px; transition:border-color .25s; position:relative; overflow:hidden; }
-    .mode-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--gold); opacity:0; transition:opacity .25s; }
-    .mode-card:hover { border-color:var(--border2); }
-    .mode-card:hover::before { opacity:1; }
-    .mode-icon { font-size:28px; margin-bottom:20px; }
-    .mode-card h3 { font-size:22px; margin-bottom:10px; }
-    .mode-card p { color:var(--silver); font-size:15px; line-height:1.7; margin-bottom:20px; }
-    .mode-includes { list-style:none; }
-    .mode-includes li { display:flex; align-items:flex-start; gap:8px; color:var(--text); font-size:14px; padding:7px 0; border-bottom:1px solid var(--border); line-height:1.5; }
-    .mode-includes li:last-child { border-bottom:none; }
-    .mode-includes li::before { content:'—'; color:var(--gold); flex-shrink:0; font-family:var(--ff-mono); margin-top:1px; }
+/* ── Motion: one orchestrated entrance, nothing scattered ───── */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:none}}
+.rise{animation:rise .62s cubic-bezier(.2,.7,.3,1) both}
+.d1{animation-delay:.05s}.d2{animation-delay:.14s}.d3{animation-delay:.23s}
+.d4{animation-delay:.32s}.d5{animation-delay:.41s}
+@media(prefers-reduced-motion:reduce){
+  .rise{animation:none}
+  html{scroll-behavior:auto}
+}
 
-    /* Firm depth levels */
-    .firm-depth { padding:90px 0; }
-    .depth-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:52px; }
-    .depth-card { background:var(--bg2); padding:40px 32px; }
-    .depth-card:first-child { border-radius:var(--radius) 0 0 var(--radius); }
-    .depth-card:last-child  { border-radius:0 var(--radius) var(--radius) 0; }
-    .depth-level { font-family:var(--ff-mono); font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; }
-    .depth-card h3 { font-size:22px; margin-bottom:10px; }
-    .depth-card p { color:var(--silver); font-size:15px; line-height:1.7; margin-bottom:20px; }
-    .depth-time { font-family:var(--ff-mono); font-size:12px; color:var(--gold); background:rgba(201,168,76,0.08); padding:5px 12px; border-radius:100px; display:inline-block; margin-top:8px; }
-
-    /* Firm engine */
-    .firm-engine { padding:90px 0; background:var(--bg2); }
-    .engine-inner { display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:center; margin-top:52px; }
-    .engine-left h3 { font-size:28px; margin-bottom:16px; }
-    .engine-left p { color:var(--silver); font-size:16px; line-height:1.75; margin-bottom:16px; }
-    .engine-highlight { background:rgba(201,168,76,0.06); border:1px solid var(--border2); border-radius:var(--radius); padding:20px 24px; margin-top:24px; }
-    .engine-highlight p { color:var(--text); font-size:15px; line-height:1.7; margin:0; }
-    .engine-right { display:grid; grid-template-columns:1fr; gap:12px; }
-    .engine-item { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; display:flex; gap:16px; align-items:flex-start; transition:border-color .2s; }
-    .engine-item:hover { border-color:var(--border2); }
-    .engine-item-icon { font-size:20px; flex-shrink:0; margin-top:2px; }
-    .engine-item h4 { font-size:15px; font-weight:600; color:#fff; margin-bottom:4px; font-family:var(--ff-body); }
-    .engine-item p { font-size:13px; color:var(--silver); line-height:1.55; margin:0; }
-
-    /* Firm features — salient */
-    .firm-features { padding:90px 0; }
-    .firm-features-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:52px; }
-    .firm-feature { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:28px; transition:border-color .2s; }
-    .firm-feature:hover { border-color:var(--border2); }
-    .firm-feature-top { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-    .firm-feature-icon { font-size:20px; }
-    .firm-feature h3 { font-size:17px; margin-bottom:0; font-size:18px; }
-    .firm-feature p { color:var(--silver); font-size:14px; line-height:1.65; }
-    .firm-feature-tag { font-family:var(--ff-mono); font-size:10px; color:var(--gold); background:rgba(201,168,76,0.08); padding:3px 8px; border-radius:4px; letter-spacing:1px; margin-top:10px; display:inline-block; }
-
-    /* Firm control */
-    .firm-control { padding:90px 0; background:var(--bg2); }
-    .control-inner { display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:center; margin-top:52px; }
-    .control-card { background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:44px; }
-    .control-card h3 { font-size:26px; margin-bottom:16px; }
-    .control-card p { color:var(--silver); font-size:16px; line-height:1.75; margin-bottom:20px; }
-    .control-list { list-style:none; margin-bottom:32px; }
-    .control-list li { display:flex; align-items:flex-start; gap:12px; color:var(--text); font-size:15px; padding:11px 0; border-bottom:1px solid var(--border); line-height:1.5; }
-    .control-list li:last-child { border-bottom:none; }
-    .control-list li::before { content:'→'; color:var(--gold); flex-shrink:0; font-family:var(--ff-mono); }
-    .control-right h3 { font-size:26px; margin-bottom:16px; }
-    .control-right p { color:var(--silver); font-size:16px; line-height:1.75; margin-bottom:16px; }
-
-    /* Desktop firm CTA */
-    .firm-cta { padding:90px 0; background:var(--bg3); border-top:1px solid var(--border2); border-bottom:1px solid var(--border2); }
-    .firm-cta-inner { display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:center; }
-    .firm-cta-left h2 { margin-bottom:16px; }
-    .firm-cta-left p { color:var(--silver); font-size:17px; line-height:1.75; margin-bottom:32px; }
-    .firm-cta-right { background:var(--bg); border:1px solid var(--border2); border-radius:14px; padding:40px; }
-    .firm-cta-right h3 { font-size:24px; margin-bottom:14px; }
-    .firm-cta-right p { color:var(--silver); font-size:15px; line-height:1.7; margin-bottom:24px; }
-    .firm-privacy-list { list-style:none; margin-bottom:32px; }
-    .firm-privacy-list li { display:flex; align-items:flex-start; gap:10px; color:var(--text); font-size:15px; padding:10px 0; border-bottom:1px solid var(--border); line-height:1.5; }
-    .firm-privacy-list li:last-child { border-bottom:none; }
-    .firm-privacy-list li::before { content:'⬛'; color:var(--gold); flex-shrink:0; font-size:10px; margin-top:5px; }
-
-    /* Testimonials */
-    .testimonials { padding:90px 0; }
-    .testi-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:52px; }
-    .testi-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:32px; }
-    .testi-stars { color:var(--gold); font-size:14px; letter-spacing:2px; margin-bottom:14px; }
-    .testi-card blockquote { font-size:15px; color:var(--text); line-height:1.75; margin-bottom:22px; font-style:italic; }
-    .testi-author { display:flex; align-items:center; gap:12px; }
-    .testi-avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--gold-dk),var(--gold)); display:flex; align-items:center; justify-content:center; font-family:var(--ff-head); font-size:16px; font-weight:700; color:#0b0c10; flex-shrink:0; }
-    .testi-name { font-weight:600; color:#fff; font-size:15px; }
-    .testi-role { color:var(--muted); font-size:13px; }
-
-    /* Pricing */
-    .pricing { padding:90px 0; background:var(--bg2); }
-    .pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:52px; }
-    .price-card { background:var(--bg); border:1.5px solid var(--border); border-radius:14px; padding:36px; position:relative; display:flex; flex-direction:column; }
-    .price-card.featured { border-color:var(--border2); box-shadow:0 0 60px rgba(201,168,76,0.08); }
-    .price-tag { position:absolute; top:-13px; left:24px; background:var(--gold); color:#0b0c10; font-family:var(--ff-mono); font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; padding:4px 12px; border-radius:100px; }
-    .price-name { font-family:var(--ff-mono); font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:14px; }
-    .price-amount { display:flex; align-items:baseline; gap:4px; margin-bottom:6px; }
-    .price-num { font-family:var(--ff-head); font-size:56px; font-weight:700; color:#fff; line-height:1; }
-    .price-per { color:var(--silver); font-size:15px; }
-    .price-desc { color:var(--silver); font-size:14px; margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid var(--border); line-height:1.6; }
-    .check-list { list-style:none; margin-bottom:28px; flex:1; }
-    .check-list li { display:flex; align-items:flex-start; gap:10px; color:var(--text); font-size:14px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); line-height:1.5; }
-    .check-list li:last-child { border-bottom:none; }
-    .check-list li::before { content:'✓'; color:var(--gold); font-weight:700; flex-shrink:0; }
-
-    /* CTA Banner */
-    .cta-banner { padding:100px 0; text-align:center; border-top:1px solid var(--border); }
-    .cta-banner h2 { max-width:600px; margin:0 auto 16px; }
-    .cta-banner p { color:var(--silver); max-width:460px; margin:0 auto 36px; font-size:18px; }
-    .cta-group { display:flex; justify-content:center; align-items:center; gap:16px; flex-wrap:wrap; }
-    .cta-trust { display:flex; justify-content:center; gap:28px; flex-wrap:wrap; margin-top:28px; }
-    .cta-trust-item { display:flex; align-items:center; gap:7px; color:var(--muted); font-family:var(--ff-mono); font-size:12px; }
-    .cta-trust-item::before { content:'✓'; color:var(--gold); }
-
-    /* FAQ */
-    .faq { padding:90px 0; background:var(--bg2); }
-    .faq-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 60px; margin-top:52px; }
-    details.question { border-top:1px solid var(--border); padding:22px 0; }
-    details.question:last-of-type { border-bottom:1px solid var(--border); }
-    details.question summary { font-weight:600; font-size:16px; color:#fff; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; user-select:none; gap:16px; }
-    details.question summary::-webkit-details-marker { display:none; }
-    details.question summary::after { content:'+'; font-size:22px; color:var(--gold); flex-shrink:0; transition:transform .2s; }
-    details[open].question summary::after { transform:rotate(45deg); }
-    details.question .ans { color:var(--silver); font-size:15px; line-height:1.75; margin-top:14px; }
-
-    /* Footer */
-    footer { border-top:1px solid var(--border); padding:48px 0 36px; }
-    .footer-top { display:grid; grid-template-columns:1.6fr 1fr 1fr; gap:48px; padding-bottom:40px; border-bottom:1px solid var(--border); margin-bottom:32px; }
-    .footer-brand .logo { font-size:20px; margin-bottom:14px; }
-    .footer-brand p { color:var(--muted); font-size:13px; line-height:1.7; max-width:280px; }
-    .footer-disclaimer { color:var(--muted); font-size:12px; line-height:1.6; margin-top:12px; font-style:italic; max-width:280px; }
-    .footer-col h4 { font-family:var(--ff-mono); font-size:11px; color:#fff; text-transform:uppercase; letter-spacing:2px; margin-bottom:16px; }
-    .footer-col a { display:block; color:var(--muted); font-size:14px; margin-bottom:10px; transition:color .2s; }
-    .footer-col a:hover { color:#fff; }
-    .footer-bottom { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
-    .footer-bottom p { color:var(--muted); font-size:13px; }
-    .ca-badge { display:flex; align-items:center; gap:8px; background:rgba(201,168,76,0.08); border:1px solid var(--border2); padding:7px 14px; border-radius:100px; color:var(--gold); font-family:var(--ff-mono); font-size:11px; font-weight:500; }
-
-    /* Responsive */
-    @media (max-width:1024px) {
-      .hero-inner, .canadian-inner, .firm-hero-inner, .engine-inner, .control-inner, .firm-cta-inner { grid-template-columns:1fr; gap:40px; }
-      .dis-grid, .modes-grid, .depth-grid, .pricing-grid { grid-template-columns:1fr 1fr; }
-      .footer-top { grid-template-columns:1fr 1fr; }
-      .footer-brand { grid-column:1/-1; }
-    }
-    @media (max-width:768px) {
-      .features-grid, .firm-features-grid, .testi-grid, .faq-grid, .ca-stats, .dis-grid, .modes-grid, .depth-grid, .pricing-grid { grid-template-columns:1fr; }
-      .feature-card:first-child { border-radius:var(--radius) var(--radius) 0 0; }
-      .feature-card:last-child  { border-radius:0 0 var(--radius) var(--radius); }
-      .depth-card:first-child { border-radius:var(--radius) var(--radius) 0 0; }
-      .depth-card:last-child  { border-radius:0 0 var(--radius) var(--radius); }
-      nav .nav-links a:not(.nav-cta-gold):not(.nav-cta-outline) { display:none; }
-      .footer-top { grid-template-columns:1fr; }
-      .footer-brand { grid-column:auto; }
-      .sample-card { display:none; }
-      .hero-trust { flex-direction:column; }
-    }
-  </style>
+/* ── Rail collapses, then the page tightens ─────────────────
+   The rail is a luxury of width. Below 860px it becomes a
+   left-hairline eyebrow above the content — still the same
+   device, still carrying the citation, but stacked. Below 560px
+   the page has to work in a side pane, so the display sizes,
+   rhythm and table all step down again rather than merely
+   reflowing. */
+@media(max-width:860px){
+  .row{grid-template-columns:1fr;gap:0}
+  .row > .margin{
+    text-align:left;border-right:none;padding-right:0;margin-right:0;
+    padding-top:0;margin-bottom:20px;
+    border-left:1px solid var(--gilt);padding-left:13px}
+  .row > .margin .cite{display:inline;margin-top:0}
+  .row > .margin .cite br{display:none}
+  .band--ink .row > .margin,footer .row > .margin{
+    border-left-color:var(--gilt)}
+  .band{padding:66px 0}
+  .sheet{padding:0 26px}
+}
+@media(max-width:560px){
+  body{font-size:16.5px;line-height:1.65}
+  h1{font-size:clamp(31px,8.4vw,40px);line-height:1.08;margin-bottom:20px}
+  h2{font-size:clamp(23px,6.2vw,29px);line-height:1.18}
+  .lede{font-size:18px;line-height:1.55}
+  .band{padding:52px 0}
+  .sheet{padding:0 20px}
+  .btn{display:block;text-align:center;margin:0 0 10px 0}
+  .specimen__head{flex-direction:column;align-items:flex-start;gap:5px}
+  .item,.specimen__head{padding-left:17px;padding-right:17px}
+  .tier,.way{padding:24px 20px}
+  .tier__price{font-size:38px}
+  /* A three-column comparison cannot survive this width. It
+     becomes stacked pairs, which is legible where a squeezed
+     table is not. */
+  table,thead,tbody,tr,td{display:block;width:100%}
+  thead{display:none}
+  tr{border-bottom:1px solid var(--rule-strong);padding:16px 0}
+  tr:last-child{border-bottom:none}
+  td{border:none;padding:2px 0}
+  td:first-child{width:auto;font-weight:600;margin-bottom:6px}
+  td:nth-child(2)::before{content:"ContractShield — ";
+    font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--ink-soft)}
+  td:nth-child(3)::before{content:"Others — ";
+    font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--ink-soft)}
+  details p{margin-left:0}
+  .quoted{padding-left:18px}
+}
+</style>
 </head>
 <body>
 
-<!-- Nav -->
-<header>
-  <div class="container">
-    <div class="nav-inner">
-      <a href="/" class="logo">Contract<span>Shield</span></a>
-      <div class="nav-links">
-        <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca" target="_blank">Contact</a>
-        <a href="#features">Features</a>
-        <a href="#firm">For Law Firms</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#faq">FAQ</a>
-        <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Demo+Request" class="nav-cta-gold btn">Request a Demo →</a>
-        <a href="#firm" class="nav-cta-outline btn">Law Firms →</a>
-      </div>
+<nav>
+  <div class="sheet">
+    <a class="brand" href="/">Contract<span>Shield</span></a>
+    <div class="navlinks">
+      <a href="#rules">The rules</a>
+      <a href="#coverage">Coverage</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#questions">Questions</a>
     </div>
   </div>
-</header>
+</nav>
 
-<!-- Hero — Consumer -->
-<section class="hero">
-  <div class="hero-glow"></div>
-  <div class="container">
-    <div class="hero-inner">
+<!-- ═══════════════════════════════════════════════════════════
+     HERO — the thesis shown rather than asserted
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band" style="border-top:none;padding-top:66px;padding-bottom:52px">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin rise d1">
+        <span class="n">Ontario</span>
+        <span class="cite">Statutory<br/>contract<br/>review</span>
+      </div>
       <div>
-        <div class="hero-badge">🇨🇦 Canadian Law Calibrated</div>
-        <h1>Don't sign without a <em>Shield.</em></h1>
-        <p class="hero-sub">
-          Canadian legal contract intelligence for solo lawyers, paralegals, and small firms. A tested statutory rule engine — Criminal Code s.347, Bill 27, the Residential Tenancies Act, Construction Act prompt payment — runs before the AI, so statutory violations are never left to a model's memory.
+        <h1 class="rise d1">The statute is checked<br/>before the model<br/>is <em>consulted.</em></h1>
+        <p class="lede rise d2">
+          Ninety-five Ontario statutory rules run on your own machine, in
+          code, before any model sees the contract. Every one of them names
+          the provision it relies on.
         </p>
-        <div class="hero-ctas">
-          <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Demo+Request" class="btn btn-gold">Request a Demo →</a>
-          <a href="#engine" class="btn btn-outline-gold">See the Engine →</a>
-          <span class="hero-divider">or</span>
-          <a href="#firm" class="btn btn-outline-silver">Law Firms →</a>
-        </div>
-        <p class="hero-note">BUILT FOR PROFESSIONAL PRACTICE · LAWYER STAYS IN CONTROL · DEMO AVAILABLE</p>
-        <div class="hero-trust">
-          <div class="trust-pill">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            PIPEDA compliant
-          </div>
-          <div class="trust-pill">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            All 13 provinces &amp; territories + federal
-          </div>
-          <div class="trust-pill">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            No data stored permanently
-          </div>
-        </div>
+        <p class="rise d3" style="max-width:56ch">
+          And when a document falls outside what those rules cover, the review
+          says so — rather than returning a clean page and leaving you to draw
+          your own conclusion.
+        </p>
+        <p class="rise d4" style="margin-top:30px">
+          <a class="btn btn--solid" href="mailto:support@contractshield.ca?subject=ContractShield%20%E2%80%94%20access">Review a contract</a>
+          <a class="btn btn--line" href="#rules">Read every rule</a>
+        </p>
       </div>
-
-      <div class="sample-card">
-        <div class="sample-card-hdr">
-          <div class="sample-dot" style="background:#ff6b6b"></div>
-          <div class="sample-dot" style="background:var(--amber)"></div>
-          <div class="sample-dot" style="background:#6fcf97"></div>
-          <span class="sample-card-title">ContractShield Audit · VENDOR_AGREEMENT.PDF</span>
-        </div>
-        <div class="sample-body">
-          <div class="sample-score">
-            <div class="sample-score-num">68</div>
-            <div class="sample-score-label">
-              <strong>Risk Score — Review Required</strong>
-              4 of 15 clauses flagged · 2 high risk
-            </div>
-          </div>
-          <div class="sample-clause high">
-            <div class="sample-clause-top"><span class="sample-clause-name">7.2 Auto-Renewal</span><span class="risk-pill risk-high">⚠ High Risk</span></div>
-            <p>90-day notice required — 3× industry standard. Negotiate to 30 days.</p>
-          </div>
-          <div class="sample-clause high">
-            <div class="sample-clause-top"><span class="sample-clause-name">4.1 Payment Terms</span><span class="risk-pill risk-high">⚠ High Risk</span></div>
-            <p>Net-90 breaches Ontario Prompt Payment Act. Maximum Net-28 enforceable.</p>
-          </div>
-          <div class="sample-clause med">
-            <div class="sample-clause-top"><span class="sample-clause-name">9.1 Liability Cap</span><span class="risk-pill risk-med">⚡ Review</span></div>
-            <p>3-month fee cap excludes consequential damages. Negotiate to 12 months.</p>
-          </div>
-          <div class="sample-clause ok">
-            <div class="sample-clause-top"><span class="sample-clause-name">3.0 IP Ownership</span><span class="risk-pill risk-ok">✓ Standard</span></div>
-            <p>Work-for-hire compliant with Canadian IP law.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Disruption Bar -->
-<div class="disruption">
-  <div class="container">
-    <p class="dis-label">First-pass review time — before vs with ContractShield</p>
-    <div class="dis-grid">
-      <div class="di"><div class="di-who">Solo Lawyer</div><div class="di-old">2 hrs / contract</div><div class="di-new">5 min</div><div class="di-desc">first-pass memo, redline ready</div></div>
-      <div class="di"><div class="di-who">Paralegal (LTB)</div><div class="di-old">Manual RTA check</div><div class="di-new">Instant</div><div class="di-desc">9 deterministic RTA checks, section-cited</div></div>
-      <div class="di"><div class="di-who">Small Firm</div><div class="di-old">$99–350/user/mo tools</div><div class="di-new">Fraction</div><div class="di-desc">without enterprise minimums</div></div>
-      <div class="di"><div class="di-who">Statutory Risk</div><div class="di-old">Left to AI memory</div><div class="di-new">Rule-checked</div><div class="di-desc">112 automated tests behind the engine</div></div>
     </div>
   </div>
 </div>
 
-<!-- Features -->
-<section class="features" id="features">
-  <div class="container">
-    <p class="label">Features</p>
-    <h2>Know what you're signing.<br>Before you sign it.</h2>
-    <p class="section-sub">Built for Canadian law — not adapted from a US tool.</p>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-num">01 —</div>
-        <h3>Statutory Guardrails</h3>
-        <p>Automatically flags criminal interest rates (Criminal Code s.347), Ontario non-competes, and Prompt Payment violations before you sign. Python catches statutory issues deterministically — not left to AI.</p>
+<!-- Specimen -->
+<div class="band" style="padding-top:0;border-top:none;padding-bottom:104px">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin rise d5">
+        <span class="n">Specimen</span>
+        <span class="cite">Residential<br/>tenancy<br/>agreement</span>
       </div>
-      <div class="feature-card">
-        <div class="feature-num">02 —</div>
-        <h3>PIPEDA-First Privacy</h3>
-        <p>Personal information — SIN, DOB, health, financial — is detected and automatically redacted before any AI analysis, on by default. Originals stay on your machine; analysis data is encrypted in transit and retained by no one.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-num">03 —</div>
-        <h3>True Track-Change Output</h3>
-        <p>Receive a professionally redlined Word document with genuine track changes — not a chatbot summary. A document you can hand directly to the other party or your lawyer.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-num">04 —</div>
-        <h3>15-Clause Risk Scoring</h3>
-        <p>Every audit scores 15 clause categories — payment terms, IP ownership, liability caps, termination rights, indemnity, non-competes, and more. Risk heatmap included.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-num">05 —</div>
-        <h3>Negotiation Talking Points</h3>
-        <p>The memo includes exact language to use when pushing back on problematic clauses — so you walk into negotiation knowing what to say and the legal ground you stand on.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-num">06 —</div>
-        <h3>Canadian Market Benchmarks</h3>
-        <p>Every clause compared against Canadian market standards — not generic global benchmarks. Know if a liability cap, payment term, or non-compete is industry-standard or outlier.</p>
+      <div class="specimen rise d5">
+        <div class="specimen__head">
+          <span class="doc">LEASE — BRAMPTON, ON — 4 pp</span>
+          <span class="verdict">Do not sign as drafted</span>
+        </div>
+        <div class="item">
+          <div class="tags">
+            <span class="tag tag--crit">Critical</span>
+            <span class="tag tag--stat">Verified against statute</span>
+          </div>
+          <h3>Damage deposit is void</h3>
+          <p>A deposit of $2,000 is provided for. A landlord may collect last
+            month's rent and nothing further. The clause is unenforceable
+            however it is worded, and whatever the parties agreed.</p>
+          <span class="prov">Residential Tenancies Act, 2006 — s.105</span>
+        </div>
+        <div class="item">
+          <div class="tags">
+            <span class="tag tag--crit">Critical</span>
+            <span class="tag tag--stat">Verified against statute</span>
+          </div>
+          <h3>Late fee exceeds the permitted charge</h3>
+          <p>A $75 monthly charge is imposed on late rent. Only the prescribed
+            amount may be charged, and administrative penalties beyond it are
+            not recoverable.</p>
+          <span class="prov">Residential Tenancies Act, 2006 — s.134</span>
+        </div>
+        <div class="item">
+          <div class="tags"><span class="tag tag--ai">AI analysis</span></div>
+          <h3>Indemnity runs one way</h3>
+          <p>The tenant indemnifies the landlord with no reciprocity and no
+            cap. Not prohibited, unusual in a residential agreement, and worth
+            raising before signature.</p>
+          <span class="prov prov--none">Model judgement — read before relying on it</span>
+        </div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- Canadian Compliance -->
-<section class="canadian" id="canadian">
-  <div class="container">
-    <p class="label">Built for Canadian Law</p>
-    <h2>The only AI contract tool built<br>specifically for Canada.</h2>
-    <p class="section-sub">Generic global tools miss Canadian-specific statutes. We don't.</p>
-    <div class="canadian-inner">
-      <div>
-        <div class="ca-rule">
-          <span class="ca-badge">s.347</span>
-          <div><h4>Criminal Code — Criminal Interest Rates</h4><p>Flags interest rates exceeding the legal limit under Criminal Code s.347, protecting you from predatory lending terms buried in contracts.</p></div>
-        </div>
-        <div class="ca-rule">
-          <span class="ca-badge">ESA / Bill 27</span>
-          <div><h4>Ontario Employment Standards Act</h4><p>Flags unenforceable non-compete clauses under Ontario's ESA amendments and identifies below-standard termination provisions.</p></div>
-        </div>
-        <div class="ca-rule">
-          <span class="ca-badge">CCQ / Bill 96</span>
-          <div><h4>Quebec Civil Code</h4><p>Province-specific rules under the CCQ and Bill 96 applied for contracts governed by Quebec law.</p></div>
-        </div>
-        <div class="ca-rule">
-          <span class="ca-badge">CCA</span>
-          <div><h4>Construction Act — Prompt Payment</h4><p>Identifies violations of Ontario's Prompt Payment requirements and flags non-compliant payment timelines in construction and service contracts.</p></div>
-        </div>
-        <div class="ca-rule">
-          <span class="ca-badge">PIPEDA</span>
-          <div><h4>Personal Information Protection</h4><p>Native PI detection — SIN, DOB, health info, financial accounts — redacted before analysis. Matter retention management with auto-purge.</p></div>
-        </div>
-      </div>
-      <div class="ca-stats">
-        <div class="ca-stat"><div class="ca-stat-num">15</div><div class="ca-stat-label">Clause categories audited</div></div>
-        <div class="ca-stat"><div class="ca-stat-num">14</div><div class="ca-stat-label">Jurisdictions — 13 prov/terr + federal</div></div>
-        <div class="ca-stat"><div class="ca-stat-num">60s</div><div class="ca-stat-label">Analysis time</div></div>
-        <div class="ca-stat"><div class="ca-stat-num">$0</div><div class="ca-stat-label">Data stored permanently</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
-     LAW FIRM DIVIDER — separate entry point
-═══════════════════════════════════════════ -->
-<div class="firm-divider" id="firm">
-  <div class="firm-divider-inner">
-    <p class="label">For Law Firms & Legal Teams</p>
-    <h2>ContractShield <em>Pro</em></h2>
-    <p>The professional desktop application for law firms, in-house legal teams, and legal counsel. Built for the way law firms actually work.</p>
-    <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Pro+Enquiry" target="_blank" class="btn btn-gold" style="font-size:17px; padding:16px 40px;">
-      Request a Demo →
-    </a>
   </div>
 </div>
 
-<!-- Firm Hero -->
-<section class="firm-hero">
-  <div class="container">
-    <div class="firm-hero-inner">
+<!-- ═══════════════════════════════════════════════════════════
+     THE ARGUMENT
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin">
+        <span class="n">Why</span>
+        <span class="cite">RTA s.105</span>
+      </div>
       <div>
-        <div class="firm-badge">Desktop Application · Law Firm Edition</div>
-        <div class="firm-headline">Your first-pass associate.<br><em>Available 24/7.</em></div>
-        <p class="firm-sub">
-          ContractShield Pro replaces the first two hours of contract review — handling the mandatory checklist, statutory red-lining, benchmark comparisons, and draft amendments while your lawyers focus on judgment, strategy, and clients.
+        <h2>A model has a view about<br/>the deposit clause.<br/>The Act has a rule.</h2>
+        <p class="lede" style="margin-top:20px">
+          Section 105 permits a landlord to collect last month's rent and
+          nothing else. A damage deposit is void — whatever the parties
+          signed, however carefully the clause is drafted.
         </p>
-        <div class="firm-cta-group">
-          <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Pro+Enquiry" target="_blank" class="btn btn-gold">Request a Demo →</a>
-          <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Pro+Pricing" target="_blank" class="btn btn-outline-silver">Contact for Pricing →</a>
-        </div>
-        <p class="firm-note">DESKTOP APPLICATION · YOUR FIRM'S OWN AWS ACCOUNT · ZERO DATA RETENTION</p>
+        <p>
+          That is not a matter of judgement, and it should not rest on a
+          language model's recollection of an Ontario statute. ContractShield
+          checks it in Python, names the section, and returns the same answer
+          every time on the same text.
+        </p>
+        <p>
+          The model is then handed those findings as established facts it may
+          not contradict, and asked only for what rules cannot judge: whether
+          an indemnity is one-sided, whether a legal description will survive
+          closing, whether a municipal seller shows authority on the face of
+          the agreement.
+        </p>
+        <p class="fine">
+          Every finding is labelled with which of the two produced it. You
+          always know what you can cite.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     THE RULES
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band band--field" id="rules">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin">
+        <span class="n">Inventory</span>
+        <span class="cite">95 rules<br/>6 packs</span>
       </div>
       <div>
-        <div class="engine-item" style="margin-bottom:12px; border-color:var(--border2);">
-          <div class="engine-item-icon">⚖️</div>
-          <div>
-            <h4>Lawyer Stays in Control — Always</h4>
-            <p>AI First-Pass. Your judgment. Your conclusions. Every output reviewed and signed off by qualified counsel. Professional responsibility stays with you.</p>
+        <h2>Ontario, in depth.</h2>
+        <p class="lede">Provisions named so you can check them. You should.</p>
+
+        <div class="pack">
+          <div class="pack__top">
+            <h3>Residential tenancy</h3><span class="pack__n">9 RULES</span>
           </div>
+          <p><span class="s">s.105</span> deposits ·
+             <span class="s">s.134</span> late fees and additional charges ·
+             <span class="s">ss.26–27</span> entry and notice ·
+             <span class="s">s.3</span> lease-break penalties ·
+             <span class="s">ss.44, 47–69</span> termination ·
+             <span class="s">s.14</span> pet clauses ·
+             <span class="s">ss.20, 33</span> repair obligations ·
+             <span class="s">s.108</span> post-dated cheques ·
+             <span class="s">O. Reg 9/18</span> Standard Lease</p>
         </div>
-        <div class="engine-item" style="margin-bottom:12px;">
-          <div class="engine-item-icon">🏛️</div>
-          <div>
-            <h4>Audit Log with Reviewer Signature Line</h4>
-            <p>Every analysis generates a complete audit trail — reviewer signature line, partner review checklist, and matter history exportable for Law Society audits.</p>
+
+        <div class="pack">
+          <div class="pack__top">
+            <h3>Purchase and sale</h3><span class="pack__n">19 RULES</span>
           </div>
+          <p>Deposit trust and delivery under <span class="s">TRESA</span> and
+             <span class="s">O. Reg 536/23</span> · deposit holder left
+             unnamed · nominal deposits · requisition date falling on or after
+             closing · requisition periods too short to be used · conditions
+             with no waiver mechanism · waiver notice with no delivery rule ·
+             <span class="s">Planning Act s.50</span> consent on a part-lot
+             conveyance · HST addressed against the price ·
+             <span class="s">ITA s.116</span> residency · date fields left
+             half-completed · schedules that must be read against the body</p>
         </div>
-        <div class="engine-item" style="margin-bottom:12px;">
-          <div class="engine-item-icon">🔒</div>
-          <div>
-            <h4>Confidentiality by Architecture</h4>
-            <p>Runs under your firm's own AWS account: zero data retention, never used for model training, zero operator access, encrypted matter storage, and automatic PI redaction before any AI call. Cross-border processing is clearly disclosed, with a retainer disclosure clause generator built in.</p>
+
+        <div class="pack">
+          <div class="pack__top">
+            <h3>Pre-construction and Tarion</h3><span class="pack__n">16 RULES</span>
           </div>
+          <p>Addendum missing or its precedence reversed · no Statement of
+             Critical Dates · unilateral extension of closing · delayed
+             closing compensation waived · deposit protection not stated ·
+             deposit released to the builder ·
+             <span class="s">Condominium Act s.73</span> ten-day rescission ·
+             disclosure statement · interim occupancy terms · HST new housing
+             rebate assignment · uncapped levies and closing adjustments ·
+             assignment terms · unilateral change of materials or plans</p>
         </div>
-        <div class="engine-item">
-          <div class="engine-item-icon">📋</div>
-          <div>
-            <h4>Partner Review Checklist Built In</h4>
-            <p>Every output includes a structured partner review checklist — so the reviewing partner knows exactly what the AI assessed and what requires their independent judgment.</p>
+
+        <div class="pack">
+          <div class="pack__top">
+            <h3>Employment</h3><span class="pack__n">12 RULES</span>
           </div>
+          <p><span class="s">ESA s.5</span> non-waivable minimums ·
+             <span class="s">Bill 27</span> non-compete ban with the executive
+             carve-out · just cause below the <em>Waksdale</em> standard ·
+             <span class="s">ss.57–58</span> notice ·
+             <span class="s">ss.64–65</span> severance ·
+             <span class="s">s.61</span> benefits through the notice period ·
+             <span class="s">ss.33–35.2</span> vacation ·
+             <span class="s">s.22</span> overtime ·
+             <span class="s">s.22(2)</span> hours averaging ·
+             <span class="s">Part XI.1</span> electronic monitoring ·
+             probation beyond the notice threshold · layoff with no
+             contractual right</p>
         </div>
+
+        <div class="pack">
+          <div class="pack__top">
+            <h3>Consumer protection</h3><span class="pack__n">6 RULES</span>
+          </div>
+          <p><span class="s">CPA s.43</span> cooling-off on a direct agreement
+             · cancellation procedure ·
+             <span class="s">s.93</span> and <span class="s">O. Reg 17/05</span>
+             prescribed content · <span class="s">s.42</span> price exceeding
+             the estimate by more than ten per cent ·
+             <span class="s">s.7</span> non-waivable rights ·
+             <span class="s">ss.7(2), 8</span> arbitration and class action
+             waivers</p>
+        </div>
+
+        <div class="pack">
+          <div class="pack__top">
+            <h3>Federal and construction</h3><span class="pack__n">FURTHER RULES</span>
+          </div>
+          <p><span class="s">Criminal Code s.347</span> criminal interest
+             rate, with effective-APR computation for compounded rates ·
+             <span class="s">Construction Act</span> prompt payment and
+             holdback</p>
+        </div>
+
+        <p class="fine" style="margin-top:26px">
+          Every other contract type — software licensing, non-disclosure,
+          shareholder, franchise, distribution and twenty more — receives a
+          clause checklist and full analysis. What it does not receive is a
+          statutory rule pack, and the review says so rather than leaving you
+          to assume.
+        </p>
       </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- Three Output Modes -->
-<section class="firm-modes">
-  <div class="container">
-    <p class="label">Output Modes</p>
-    <h2>Three modes. Every matter covered.</h2>
-    <p class="section-sub">Select the output that matches your workflow — associate review, client communication, or active negotiation.</p>
-    <div class="modes-grid">
-
-      <div class="mode-card">
-        <div class="mode-icon">📄</div>
-        <h3>Associate Memo</h3>
-        <p>Structured analysis formatted for internal partner review. Covers all 15 mandatory clause categories with risk heatmap, enforceability assessment, and benchmark comparison.</p>
-        <ul class="mode-includes">
-          <li>15-clause mandatory checklist</li>
-          <li>Risk heatmap + scorecard</li>
-          <li>Enforceability percentage per clause</li>
-          <li>Canadian market benchmark comparison</li>
-          <li>Confidence tagging: HIGH / MEDIUM / REQUIRES REVIEW</li>
-          <li>Partner review checklist</li>
-          <li>Audit log with reviewer signature line</li>
-        </ul>
-      </div>
-
-      <div class="mode-card">
-        <div class="mode-icon">👤</div>
-        <h3>Client Advisory</h3>
-        <p>Plain-language analysis formatted for client communication — translating legal risk into business impact without jargon. Ready to send after partner review.</p>
-        <ul class="mode-includes">
-          <li>Plain-English risk summary</li>
-          <li>Business impact framing per clause</li>
-          <li>Recommended positions with rationale</li>
-          <li>Priority issues clearly ranked</li>
-          <li>Retainer disclosure clause (PIPEDA)</li>
-          <li>Formatted for client delivery</li>
-        </ul>
-      </div>
-
-      <div class="mode-card">
-        <div class="mode-icon">⚡</div>
-        <h3>Opposing Counsel Redline</h3>
-        <p>Complete negotiation package — true OOXML track changes, full amendments schedule, replacement clauses, and negotiation simulator predicting opposing counsel responses.</p>
-        <ul class="mode-includes">
-          <li>True OOXML track changes (native Accept/Reject)</li>
-          <li>Complete replacement clauses — ready to insert</li>
-          <li>Amendments schedule for counsel</li>
-          <li>One-click applied redline DOCX</li>
-          <li>Negotiation simulator — opposing counsel responses</li>
-          <li>Version comparison: original vs counterparty redline</li>
-        </ul>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- Three Depth Levels -->
-<section class="firm-depth">
-  <div class="container">
-    <p class="label">Depth Levels</p>
-    <h2>Match the analysis to<br>the matter.</h2>
-    <p class="section-sub">Three levels calibrated to contract value, complexity, and your timeline.</p>
-    <div class="depth-grid">
-      <div class="depth-card">
-        <div class="depth-level">Level 01</div>
-        <h3>Quick Scan</h3>
-        <p>Rapid statutory red-line and mandatory clause check. Catches Criminal Code violations, unenforceable terms, and obvious outlier clauses. Ideal for NDA, short service agreements, and LOIs.</p>
-        <span class="depth-time">⚡ ~60 seconds</span>
-      </div>
-      <div class="depth-card">
-        <div class="depth-level">Level 02</div>
-        <h3>Standard Review</h3>
-        <p>Full 15-clause analysis with benchmark comparisons, risk heatmap, enforceability scoring, and recommended positions. Suitable for most commercial agreements and vendor contracts.</p>
-        <span class="depth-time">⚡ ~3–5 minutes</span>
-      </div>
-      <div class="depth-card">
-        <div class="depth-level">Level 03</div>
-        <h3>Deep Dive + Redraft</h3>
-        <p>Comprehensive review with full redline, replacement clauses from the vetted precedent library, amendments schedule, and negotiation simulator. For high-value transactions and complex agreements.</p>
-        <span class="depth-time">⚡ ~8–12 minutes</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Hybrid Engine -->
-<section class="firm-engine">
-  <div class="container">
-    <p class="label">The Engine</p>
-    <h2>Hybrid AI + rule engine.<br>Statutory violations never left to hallucination.</h2>
-    <div class="engine-inner">
-      <div class="engine-left">
-        <h3>Two layers. Each doing what it does best.</h3>
-        <p>A Python rule engine runs before the AI call — catching Criminal Code interest caps, Ontario non-compete bans, Construction Act prompt payment violations, and provincial statutory requirements deterministically. These are not AI judgment calls. They are binary rule checks that are always correct.</p>
-        <p>The AI then handles what requires contextual judgment — clause interpretation, enforceability assessment, benchmark comparison, and replacement drafting — with the statutory ground truth injected as context the AI cannot contradict.</p>
-        <div class="engine-highlight">
-          <p><strong>The result:</strong> Statutory compliance is guaranteed. Contextual analysis is enhanced. Neither is left to chance.</p>
-        </div>
-      </div>
-      <div class="engine-right">
-        <div class="engine-item">
-          <div class="engine-item-icon">🐍</div>
-          <div><h4>Python Rule Engine — Pre-AI</h4><p>Deterministic statutory checks — Criminal Code s.347, ESA Bill 27, CCQ Bill 96, BC PIPA, Construction Act. Binary pass/fail. Always correct. Injected as ground truth before AI analysis.</p></div>
-        </div>
-        <div class="engine-item">
-          <div class="engine-item-icon">🤖</div>
-          <div><h4>AI — Contextual Analysis</h4><p>Clause interpretation, enforceability assessment, benchmark comparison, risk scoring, and replacement language drafting. Calibrated to deal value and counterparty type.</p></div>
-        </div>
-        <div class="engine-item">
-          <div class="engine-item-icon">🎯</div>
-          <div><h4>Deal Context Engine</h4><p>Contract value, industry, counterparty type, and risk tolerance dynamically adjust all thresholds. A $50K deal and a $5M deal get different liability cap floors and benchmark standards.</p></div>
-        </div>
-        <div class="engine-item">
-          <div class="engine-item-icon">✅</div>
-          <div><h4>JSON Schema Validation + Retry</h4><p>Every output validated against strict JSON schema with up to 3 correction attempts. Citation validated against detected clause index. No hallucinated references.</p></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Salient Features Grid -->
-<section class="firm-features" id="firm-features">
-  <div class="container">
-    <p class="label">Salient Features</p>
-    <h2>Everything a law firm needs.<br>Nothing it doesn't.</h2>
-    <p class="section-sub">Every feature built for professional legal practice — not adapted from a consumer tool.</p>
-    <div class="firm-features-grid">
-
-      <div class="firm-feature">
-        <div class="firm-feature-top">
-          <div class="firm-feature-icon">📜</div>
-          <h3>Vetted Canadian Precedent Library</h3>
-        </div>
-        <p>Pre-approved precedent library by contract type — NDA, service agreement, employment, construction, commercial lease. AI adapts from vetted precedents with deal-specific values, not freeform drafting.</p>
-        <span class="firm-feature-tag">PRECEDENT LIBRARY</span>
-      </div>
-
-      <div class="firm-feature">
-        <div class="firm-feature-top">
-          <div class="firm-feature-icon">∞</div>
-          <h3>Unlimited Document Length</h3>
-        </div>
-        <p>No silent truncation. Handles 100+ page M&A agreements, complex multi-schedule commercial contracts, and lengthy construction agreements via overlapping chunk-then-synthesize pipeline.</p>
-        <span class="firm-feature-tag">NO LENGTH LIMIT</span>
-      </div>
-
-      <div class="firm-feature">
-        <div class="firm-feature-top">
-          <div class="firm-feature-icon">📎</div>
-          <h3>Multi-Document Support</h3>
-        </div>
-        <p>Analyse the main agreement alongside up to 4 schedules simultaneously. Cross-references definitions, obligations, and inconsistencies across the full suite of transaction documents.</p>
-        <span class="firm-feature-tag">MULTI-DOCUMENT</span>
-      </div>
-
-      <div class="firm-feature">
-        <div class="firm-feature-top">
-          <div class="firm-feature-icon">👁️</div>
-          <h3>3-Tier OCR Fallback</h3>
-        </div>
-        <p>PDF, DOCX, TXT input with automatic OCR escalation — pdfplumber → Tesseract with OpenCV preprocessing → Claude Vision. Scanned contracts, faxed agreements, and image PDFs all handled.</p>
-        <span class="firm-feature-tag">OCR VISION</span>
-      </div>
-
-      <div class="firm-feature">
-        <div class="firm-feature-top">
-          <div class="firm-feature-icon">🔄</div>
-          <h3>Negotiation Simulator</h3>
-        </div>
-        <p>Predicts opposing counsel's likely responses to your proposed amendments — so you can anticipate counterproposals and prepare your negotiation strategy before the call.</p>
-        <span class="firm-feature-tag">NEGOTIATION</span>
-      </div>
-
-      <div class="firm-feature">
-        <div class="firm-feature-top">
-          <div class="firm-feature-icon">⚖️</div>
-          <h3>Version Comparison</h3>
-        </div>
-        <p>Compare the original agreement against the counterparty's redline — instantly identifying what changed, what was added, and what was deleted across the full document.</p>
-        <span class="firm-feature-tag">REDLINE COMPARISON</span>
-      </div>
-
-      <div class="firm-feature">
-        <div class="firm-feature-top">
-          <div class="firm-feature-icon">🗄️</div>
-          <h3>Persistent Matter History</h3>
-        </div>
-        <p>SQLite matter store with reviewer tracking — every analysis logged with reviewer identity, timestamp, confidence scores, and conclusions. CSV export formatted for Law Society audit requirements.</p>
-        <span class="firm-feature-tag">LAW SOCIETY READY</span>
-      </div>
-
-      <div class="firm-feature">
-        <div class="firm-feature-top">
-          <div class="firm-feature-icon">🛡️</div>
-          <h3>PIPEDA Compliance Centre</h3>
-        </div>
-        <p>Pre-upload PI detection covering SIN, DOB, health information, financial accounts, and more. Auto-redaction before API call. Retainer disclosure clause generator. Matter retention management with auto-purge.</p>
-        <span class="firm-feature-tag">PIPEDA</span>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- Lawyer Control + Desktop App -->
-<section class="firm-control">
-  <div class="container">
-    <p class="label">Designed for Professional Practice</p>
-    <h2>AI First-Pass. Your judgment.<br>Your conclusions.</h2>
-    <div class="control-inner">
-      <div class="control-card">
-        <h3>Lawyer Stays in Control</h3>
-        <p>ContractShield Pro is a drafting aid — not an autonomous legal tool. Every output is structured for professional review, not for independent reliance.</p>
-        <ul class="control-list">
-          <li>Every analysis tagged HIGH / MEDIUM / REQUIRES REVIEW — never presented as definitive</li>
-          <li>Audit log with reviewer signature line on every output</li>
-          <li>Partner review checklist built into every deliverable</li>
-          <li>Enforceability percentages flagged for human confirmation</li>
-          <li>AI conclusions can be overridden — matter history tracks all changes</li>
-          <li>Retainer disclosure clause generator for client engagement</li>
-        </ul>
-        <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Pro+Enquiry" target="_blank" class="btn btn-gold">Request a Demo →</a>
-      </div>
-      <div class="control-right">
-        <h3>Desktop Application —<br>Your Firm's Own Infrastructure</h3>
-        <p>ContractShield Pro runs on your machine and connects to AI through your firm's own AWS account — the same zero-retention, no-training architecture used by leading legal AI platforms, with no vendor sitting between your client's contract and the model.</p>
-        <p>Personal information is automatically redacted before the AI call. The original document never leaves your machine — only the redacted analysis text is processed, encrypted in transit, retained by no one, and trained on by no one.</p>
-        <p>The full feature set — hybrid engine, all output modes, all depth levels, encrypted matter history, PIPEDA compliance centre — with honest, documented data flows your clients and the Law Society can scrutinize.</p>
-        <div class="firm-privacy-list" style="margin-top:24px">
-          <ul class="firm-privacy-list">
-            <li>Runs under your firm's own AWS account — no vendor custody of client data</li>
-            <li>Zero data retention · never used for model training · zero operator access</li>
-            <li>Automatic PI redaction before analysis — originals never leave your machine</li>
-            <li>Encrypted matter storage with retention auto-purge</li>
-            <li>Unlimited matters — no per-contract fees</li>
-            <li>Cross-border processing disclosed — retainer clause generator included</li>
-          </ul>
-        </div>
-        <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Pro+Desktop+Enquiry" target="_blank" class="btn btn-outline-gold" style="margin-top:8px; display:inline-block;">
-          Enquire About Desktop App →
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Pricing -->
-<section class="pricing" id="pricing">
-  <div class="container">
-    <p class="label">Pricing</p>
-    <h2>Professional tools.<br>Priced for real practices.</h2>
-    <p class="section-sub">Built for solo lawyers, paralegals, and small firms — without enterprise minimums. Founding-practice pricing available.</p>
-    <div class="pricing-grid">
-
-      <div class="price-card featured">
-        <div class="price-tag">Solo Lawyers &amp; Paralegals</div>
-        <div class="price-name">ContractShield Solo</div>
-        <div class="price-amount"><span class="price-num" style="font-size:36px;">Founding</span></div>
-        <p class="price-desc">The full professional application for a practice of one. Unlimited analyses, every output mode, and the complete Canadian statutory engine — including the Ontario RTA pack for LTB practice.</p>
-        <ul class="check-list">
-          <li>Type-aware clause audits (commercial + residential tenancy)</li>
-          <li>Ontario RTA rule pack — 9 deterministic checks, section-cited</li>
-          <li>Risk heatmap + enforceability scoring</li>
-          <li>Redlined Word doc — true track changes</li>
-          <li>Automatic PI redaction + PIPEDA toolkit</li>
-          <li>Encrypted matter history + Law Society CSV</li>
-        </ul>
-        <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Solo+Founding+Pricing" target="_blank" class="btn btn-gold" style="display:block;text-align:center;font-size:16px;padding:15px;">
-          Get Founding Pricing →
-        </a>
-      </div>
-
-      <div class="price-card">
-        <div class="price-name">ContractShield Pro — Desktop</div>
-        <div class="price-amount"><span class="price-num" style="font-size:36px;">Contact</span></div>
-        <p class="price-desc">Professional desktop application for small firms and legal teams. Runs under your firm&rsquo;s own AWS account. Unlimited contracts.</p>
-        <ul class="check-list">
-          <li>All three output modes</li>
-          <li>All three depth levels</li>
-          <li>Hybrid AI + Python rule engine</li>
-          <li>Vetted Canadian precedent clause library</li>
-          <li>Negotiation simulator</li>
-          <li>Matter history + Law Society CSV</li>
-          <li>Zero retention — no training on client data</li>
-          <li>All 13 provinces &amp; territories + federal rules</li>
-        </ul>
-        <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Pro+Enquiry" target="_blank" class="btn btn-outline-gold" style="display:block;text-align:center;font-size:16px;padding:15px;">
-          Request a Demo →
-        </a>
-      </div>
-
-      <div class="price-card">
-        <div class="price-name">Enterprise / In-House Legal</div>
-        <div class="price-amount"><span class="price-num" style="font-size:36px;">Volume</span></div>
-        <p class="price-desc">For in-house legal teams, large firms, and organizations reviewing 50+ contracts per month. API access and custom integration available.</p>
-        <ul class="check-list">
-          <li>Everything in Pro Desktop</li>
-          <li>API access for workflow integration</li>
-          <li>Custom clause library configuration</li>
-          <li>Bulk batch processing</li>
-          <li>White-label output</li>
-          <li>Dedicated support and onboarding</li>
-          <li>SLA and uptime guarantees</li>
-        </ul>
-        <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=Enterprise+Enquiry" target="_blank" class="btn btn-outline-silver" style="display:block;text-align:center;font-size:16px;padding:15px;">
-          Contact for Enterprise →
-        </a>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- CTA Banner -->
-<section class="cta-banner">
-  <div class="container">
-    <p class="label">Get Started</p>
-    <h2>Your first-pass associate.<br>Backed by actual statutes.</h2>
-    <p>Solo lawyers and paralegals get founding pricing. Firms request a demo. Everyone gets Canadian law — deterministically.</p>
-    <div class="cta-group">
-      <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Solo+Founding+Pricing" target="_blank" class="btn btn-gold" style="font-size:17px; padding:16px 36px;">Get Founding Pricing →</a>
-      <a href="https://mail.google.com/mail/?view=cm&to=support@contractshield.ca&su=ContractShield+Pro+Enquiry" target="_blank" class="btn btn-outline-gold" style="font-size:17px; padding:16px 36px;">Request a Demo →</a>
-    </div>
-    <div class="cta-trust">
-      <div class="cta-trust-item">Lawyer stays in control</div>
-      <div class="cta-trust-item">PIPEDA compliant</div>
-      <div class="cta-trust-item">All 13 provinces &amp; territories + federal</div>
-      <div class="cta-trust-item">Desktop app for firms</div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section class="faq" id="faq">
-  <div class="container">
-    <p class="label">FAQ</p>
-    <h2>Common questions.</h2>
-    <div class="faq-grid">
-      <div>
-        <details class="question">
-          <summary>Is this legal advice?</summary>
-          <p class="ans">No. ContractShield provides an AI-powered compliance audit and strategic memo. It is a powerful information tool, not a substitute for a licensed Canadian lawyer. For the professional desktop application, every output is structured for review by qualified counsel — professional responsibility remains with the lawyer.</p>
-        </details>
-        <details class="question">
-          <summary>Is my contract data safe?</summary>
-          <p class="ans">Yes — and we tell you exactly how. Personal information is detected and automatically redacted before any AI analysis. The application runs on your machine and connects through your firm's own AWS account with zero data retention, no training on your data, and zero operator access. Analysis is processed on AWS infrastructure in the United States (cross-border processing we disclose plainly — a PIPEDA retainer disclosure clause generator is built in). Original documents never leave your machine, and matter history is stored locally, encrypted.</p>
-        </details>
-        <details class="question">
-          <summary>How is this priced?</summary>
-          <p class="ans">Simply, and without enterprise minimums. Solo lawyers and paralegals get founding-practice pricing with unlimited analyses — email us for the current rate. Small firms and teams get per-practice pricing. There are no per-contract fees, no seat minimums, and no multi-month lock-ins. We built this for the practices that enterprise legal AI priced out.</p>
-        </details>
-        <details class="question">
-          <summary>What types of contracts do you support?</summary>
-          <p class="ans">Employment contracts, independent contractor agreements, NDAs, service agreements, vendor agreements, construction contracts, commercial leases, SaaS agreements, franchise agreements — and Ontario residential tenancy agreements, with a dedicated RTA rule pack and residential-specific clause checklist. Complex 100+ page agreements and multi-document transaction suites (main agreement plus up to four schedules) are fully supported.</p>
-        </details>
+<!-- ═══════════════════════════════════════════════════════════
+     COVERAGE — the single inversion on the page, spent on the
+     claim no competitor makes
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band band--ink" id="coverage">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin">
+        <span class="n">Disclosure</span>
+        <span class="cite">On every<br/>review</span>
       </div>
       <div>
-        <details class="question">
-          <summary>What provinces and jurisdictions are covered?</summary>
-          <p class="ans">All 13 provinces and territories plus federal. Deterministic statutory rules currently run deepest for Ontario — Criminal Code s.347 (with effective-APR computation for compounded rates), ESA and Bill 27 non-competes including the executive carve-out, Construction Act prompt payment, and the full Residential Tenancies Act pack — with jurisdiction guidance for Quebec (CCQ/Bill 96), BC, Alberta, the Prairies, Atlantic Canada, and the territories applied per contract. The rule library is tested (112 automated tests) and expanding province by province.</p>
-        </details>
-        <details class="question">
-          <summary>How does the hybrid engine work?</summary>
-          <p class="ans">A Python rule engine runs before the AI call — catching Criminal Code interest caps, Ontario non-compete bans, Construction Act violations, and other statutory issues deterministically. These are binary rule checks, not AI judgment calls. The AI then handles contextual analysis with the statutory ground truth injected as context it cannot contradict.</p>
-        </details>
-        <details class="question">
-          <summary>Is this useful for paralegals?</summary>
-          <p class="ans">Especially. Ontario paralegals practising before the Landlord and Tenant Board get a dedicated Residential Tenancies Act rule pack — nine deterministic checks covering deposits (s.105), late-payment fees (s.134), entry rights (s.26-27), lease-break penalties, termination notice, pet clauses (s.14), repair obligations, post-dated cheque requirements (s.108), and Ontario Standard Lease compliance (O.Reg 9/18) — each flag cited to its section. Small Claims and contract matters are covered by the commercial engine.</p>
-        </details>
-        <details class="question">
-          <summary>How do I get the desktop application for my firm?</summary>
-          <p class="ans">Contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="02717772726d707642616d6c7670636176716a6b676e662c6163">[email&#160;protected]</a> with "ContractShield Pro Enquiry" in the subject line, or click "Request a Demo" anywhere on the page. We'll discuss your firm's requirements, volume, and configure the application for your practice areas and provincial jurisdictions.</p>
-        </details>
+        <h2>A review that finds nothing<br/>is the most dangerous thing<br/>this software can produce.</h2>
+        <p class="lede" style="margin-top:20px">
+          It reads as <em>the contract is sound</em>. It usually means
+          <em>no rules exist for this document type</em>.
+        </p>
+        <p style="color:#b8c2bd">
+          So every review states its own coverage, in the review itself, in
+          these words:
+        </p>
+        <div class="quoted" style="border-left-color:#a67c2e">
+          <p style="color:#e8ebe9">
+            Twelve rules written for this document type in Ontario, plus
+            general Canadian checks. Four blanks or placeholders found. Rules
+            cannot assess a term that has not been filled in, so an unfilled
+            document can read as clean.
+          </p>
+          <p style="color:#e8ebe9">
+            No statutory rules yet for this document type. Nothing was checked
+            against legislation, so an empty statutory list here does not mean
+            the contract is compliant.
+          </p>
+        </div>
+        <p class="fine" style="color:#8d9a94">
+          We are not aware of another contract tool that volunteers this.
+        </p>
       </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- Footer -->
+<!-- ═══════════════════════════════════════════════════════════
+     THREE WAYS IN
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin">
+        <span class="n">Access</span>
+        <span class="cite">Word<br/>Explorer<br/>Desktop</span>
+      </div>
+      <div>
+        <h2>Where the contract already is.</h2>
+        <p class="lede" style="margin-bottom:30px">
+          No upload step, no conversion, no separate portal to remember.
+        </p>
+        <div class="ways">
+          <div class="way">
+            <span class="way__n">In Word</span>
+            <p>Open the agreement and press <strong>Review contract</strong>
+              on the Home tab. Findings appear beside the document. Select one
+              and Word moves to the clause. Replacement language goes in as a
+              genuine tracked change.</p>
+          </div>
+          <div class="way">
+            <span class="way__n">On a PDF</span>
+            <p>Right-click the file and choose <strong>Review with
+              ContractShield</strong>. Scans included — read by OCR on your own
+              machine. A Word add-in cannot open a PDF; this is the way round
+              that.</p>
+          </div>
+          <div class="way">
+            <span class="way__n">In the application</span>
+            <p>Drag the document in. Full review, risk dashboard, matter
+              history, and your firm's own positions on the clauses you
+              negotiate most.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PRIVACY
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band band--field" id="privacy">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin">
+        <span class="n">Data</span>
+        <span class="cite">PIPEDA<br/>Local<br/>processing</span>
+      </div>
+      <div>
+        <h2>The statutory review never<br/>leaves your computer.</h2>
+        <p class="lede" style="margin-top:20px">
+          All ninety-five rules are Python running on your machine. No
+          contract text is transmitted for them. Scanned documents are read by
+          OCR locally rather than uploaded.
+        </p>
+        <p>
+          Disconnect from the network and the statutory review still works.
+          Every comparable tool is cloud-only, so a practice that cannot send
+          client material anywhere gets nothing from them — and ninety-five
+          statutory checks from this.
+        </p>
+
+        <h3 style="margin-top:38px;font-family:var(--display);font-size:22px;font-weight:400">
+          The AI review is different, and here is exactly how.</h3>
+        <p>
+          It sends contract text to the model provider you configure, under
+          your own account. Before it does, personal information is removed:
+          social insurance numbers, dates of birth, financial and card
+          numbers, health information, addresses, telephone numbers and email
+          addresses.
+        </p>
+        <div class="quoted">
+          <p><strong>Party names are deliberately kept.</strong></p>
+          <p class="fine" style="margin-bottom:0">
+            The rules reason about who owes what to whom, and redacting the
+            parties degrades the analysis. Every review reports what was
+            removed <em>and</em> what was kept, so the decision is yours before
+            anything is sent. Redact them yourself first where a matter
+            requires it.
+          </p>
+        </div>
+        <p>
+          Processing runs on AWS infrastructure outside Canada. That is
+          cross-border processing and should be disclosed to your client; a
+          retainer disclosure clause generator is built in. Matter history and
+          your clause library stay on your machine, encrypted, and are never
+          transmitted.
+        </p>
+        <p class="fine">
+          Detection is pattern based and is not a guarantee. Where nothing is
+          detected the product says so, rather than telling you the document
+          is safe.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     COMPARISON — including where it loses
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin">
+        <span class="n">Candour</span>
+        <span class="cite">Including<br/>where this<br/>loses</span>
+      </div>
+      <div>
+        <h2>Stronger here. Weaker there.</h2>
+        <table style="margin-top:26px">
+          <thead><tr>
+            <th></th><th>ContractShield</th><th>Word-native AI tools</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>Ontario statutory rules that cite the provision</td>
+                <td class="y">95</td><td class="n">None — playbooks, not statutes</td></tr>
+            <tr><td>Works without the document leaving the machine</td>
+                <td class="y">Statutory review, yes</td><td class="n">Cloud only</td></tr>
+            <tr><td>Scanned PDFs</td>
+                <td class="y">Read locally by OCR</td><td class="n">.docx only</td></tr>
+            <tr><td>States what it did not check</td>
+                <td class="y">On every review</td><td class="n">No</td></tr>
+            <tr><td>Breadth of legal content</td>
+                <td class="n">25 contract types</td>
+                <td class="y">Thousands of issues, many jurisdictions</td></tr>
+            <tr><td>Benchmarking against a contract corpus</td>
+                <td class="n">No — there is no corpus, and we will not pretend</td>
+                <td class="y">Yes</td></tr>
+            <tr><td>Price</td>
+                <td class="y">Per contract</td>
+                <td class="n">$99–350 per user, per month</td></tr>
+          </tbody>
+        </table>
+        <p class="fine" style="margin-top:22px">
+          If you review commercial agreements daily across many jurisdictions,
+          one of the larger tools suits you better and we would say so. If you
+          review Ontario agreements and want the statutory floor established
+          before you begin reading, this was built for that.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PRICING
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band band--field" id="pricing">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin">
+        <span class="n">Terms</span>
+        <span class="cite">Per contract<br/>No seats<br/>No term</span>
+      </div>
+      <div>
+        <h2>Pay for the contract you review.</h2>
+        <p class="lede" style="margin-bottom:30px">
+          Not for the month in which you happened to have the software.
+        </p>
+        <div class="tiers">
+          <div class="tier">
+            <span class="tier__label">Statutory review</span>
+            <span class="tier__price">Free</span>
+            <span class="tier__unit">unlimited, permanently</span>
+            <p>All ninety-five statutory rules, the clause checklists, blank
+              detection, the Word add-in and the right-click menu. It runs on
+              your machine and costs us nothing to provide.</p>
+          </div>
+          <div class="tier tier--mark">
+            <span class="tier__label">Full review with AI</span>
+            <span class="tier__price">$9</span>
+            <span class="tier__unit">per contract</span>
+            <p>Everything above, plus interpretive analysis, replacement
+              clauses, negotiation positions and French output. Charged per
+              contract reviewed.</p>
+          </div>
+          <div class="tier">
+            <span class="tier__label">Credit packs</span>
+            <span class="tier__price">$175</span>
+            <span class="tier__unit">25 reviews · $600 for 100</span>
+            <p>For practices reviewing regularly. Credits do not expire, and
+              there is no minimum term to leave.</p>
+          </div>
+        </div>
+        <p style="margin-top:30px">
+          <a class="btn btn--solid" href="mailto:support@contractshield.ca?subject=ContractShield%20%E2%80%94%20access">Request access</a>
+        </p>
+        <p class="fine">
+          Handled personally while this is early. Write, and you will hear
+          back from the person who built it.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     QUESTIONS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band" id="questions">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin">
+        <span class="n">Questions</span>
+        <span class="cite">Answered<br/>plainly</span>
+      </div>
+      <div>
+        <h2>Asked and answered.</h2>
+        <div style="margin-top:22px">
+
+          <details><summary>Is this legal advice?</summary>
+            <p>No. It is software. It is not a lawyer, it does not practise
+            law, and using it creates no solicitor-client relationship. A
+            licensed lawyer must review any contract before it is signed or
+            relied on. It is a first pass and a second opinion: it tells you
+            what to ask about, not what to do.</p></details>
+
+          <details><summary>What does “verified against statute” mean?</summary>
+            <p>That finding came from a deterministic rule rather than a
+            language model, and it names the provision it relies on. You can
+            check it against the statute, and you should. It returns the same
+            answer every time on the same text. Findings marked “AI analysis”
+            are model judgement and can be wrong — confidently wrong. Read them
+            before relying on them.</p></details>
+
+          <details><summary>What does a clean review mean?</summary>
+            <p>That nothing was found by the rules that exist and the analysis
+            that ran. It does not mean the contract is sound. Every review
+            states its own coverage, including where no statutory pack exists
+            for that document type.</p></details>
+
+          <details><summary>Which jurisdictions?</summary>
+            <p>The statutory rules are Ontario, together with federal rules
+            that apply nationally — Criminal Code s.347 and Income Tax Act
+            s.116. Agreements from other provinces receive the clause
+            checklist and full analysis, and the product says plainly that no
+            statutory pack applies rather than implying coverage it does not
+            have. Other provinces are next. They are not here yet.</p></details>
+
+          <details><summary>Does my client's contract leave my computer?</summary>
+            <p>Not for the statutory review, which is entirely local including
+            OCR on scanned documents. The AI review sends text to the provider
+            you configure, under your own account, after removing personal
+            information. Processing runs outside Canada; that is cross-border
+            processing, the product discloses it before you use it, and a
+            retainer disclosure clause generator is included.</p></details>
+
+          <details><summary>Does it handle scanned PDFs?</summary>
+            <p>Yes, on your machine. Right-click the PDF and choose Review
+            with ContractShield. A Word add-in cannot open a PDF — a Microsoft
+            limitation every add-in shares, including the large ones — so this
+            is the way round it.</p></details>
+
+          <details><summary>Which contract types?</summary>
+            <p>Twenty-five have a clause checklist and full analysis. Six have
+            Ontario statutory rule packs: residential tenancy, purchase and
+            sale, pre-construction, employment, consumer protection and
+            construction. Each review tells you which you are getting.</p></details>
+
+          <details><summary>Is it useful for paralegals?</summary>
+            <p>Particularly at the Landlord and Tenant Board. Nine
+            deterministic checks under the Residential Tenancies Act, each
+            cited to its section, run in seconds on a lease and cost nothing.
+            That is the free half of the product.</p></details>
+
+          <details><summary>How is it tested?</summary>
+            <p>Six hundred and twenty automated tests, including fixtures
+            built from real executed agreements — an OREA Form 100, a completed
+            Ontario purchase agreement, a residential lease. Rules are added
+            when a real document proves they are needed, not when they sound
+            useful.</p></details>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer>
-  <div class="container">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <div class="logo">Contract<span>Shield</span></div>
-        <p>Canadian legal contract intelligence for solo lawyers, paralegals, and small firms. AI review backed by a tested, jurisdiction-specific statutory rule engine.</p>
-        <p class="footer-disclaimer">ContractShield is not a law firm and does not provide legal advice. AI-generated reports are for informational purposes only. For the professional application, all outputs require review by qualified counsel. Professional responsibility remains with the lawyer.</p>
+  <div class="sheet">
+    <div class="row">
+      <div class="margin"><span class="n">Notice</span></div>
+      <div>
+        <p><span class="brand" style="font-size:20px">ContractShield</span><br/>
+          Ontario statutory contract review for solo lawyers, paralegals and
+          small firms.</p>
+        <p class="fine" style="color:#8d9a94">
+          ContractShield is not a law firm and does not provide legal advice.
+          Findings are prepared for professional review. Statutory findings
+          name their provision and should be verified against it. Findings
+          marked as AI analysis are model judgement and can be wrong.
+          Professional responsibility remains with the lawyer.
+        </p>
+        <p class="fine">
+          <a href="mailto:support@contractshield.ca">support@contractshield.ca</a>
+        </p>
       </div>
-      <div class="footer-col">
-        <h4>Product</h4>
-        <a href="#features">Features
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
+
+<!--
+════════════════════════════════════════════════════════════════
+BEFORE PUBLISHING
+════════════════════════════════════════════════════════════════
+
+REMOVED from the previous site, because the product cannot
+demonstrate them:
+
+  Quebec / CCQ / Bill 96 — there is no Quebec rule pack.
+  "All 13 provinces & territories" — the rules are Ontario plus two
+    federal ones; the badge appeared in four places.
+  "Canadian market benchmarks" — thirteen static benchmarks and no
+    corpus. The comparison table now says so outright.
+  "Enforceability percentage per clause" — implies data that does
+    not exist.
+  BC PIPA in the engine list — no BC pack exists.
+
+CORRECTED:
+  112 automated tests -> 620.
+  OCR described as Tesseract then Claude Vision -> now local
+    PaddleOCR, a stronger privacy claim rather than a weaker one.
+  "Unlimited, no per-contract fees" -> per-contract pricing.
+
+THE PRIVACY SECTION depends on v10.17 or later. Before that release
+redaction ran only in the browser application; the Word pane and the
+right-click path sent documents unredacted, and three of the four
+categories the old site named did not work. Do not publish that
+section against an older build.
+
+PRICING is stated on the page and the button is email. A purchase
+button that does not charge is worse than no button. When a checkout
+exists, one href changes.
+-->
