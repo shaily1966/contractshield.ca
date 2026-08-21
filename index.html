@@ -315,6 +315,67 @@ td:first-child{color:var(--ink);width:40%}
   .ppack:last-child{border-bottom:none}
 }
 
+/* ── Sample review ──────────────────────────────────────────── */
+.switch{display:flex;gap:0;margin-bottom:-1px;position:relative;z-index:2}
+.sw{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;
+  text-transform:uppercase;padding:12px 20px;background:var(--field);
+  border:1px solid var(--rule);border-bottom-color:var(--rule);
+  color:var(--ink-soft);cursor:pointer;margin-right:-1px}
+.sw:hover{color:var(--ink)}
+.sw--on{background:var(--paper);color:var(--ink);
+  border-bottom-color:var(--paper);box-shadow:inset 0 2px 0 var(--gilt)}
+.report{border:1px solid var(--rule);background:var(--paper);
+  box-shadow:0 1px 2px rgba(14,18,22,.04),
+             0 24px 48px -36px rgba(14,18,22,.34)}
+.report[hidden]{display:none}
+.report__head{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:20px;padding:16px 22px;border-bottom:1px solid var(--rule);
+  background:var(--field)}
+.report__doc{display:block;font-family:var(--mono);font-size:11.5px;
+  color:var(--ink);letter-spacing:.02em}
+.report__type{display:block;font-family:var(--mono);font-size:10.5px;
+  color:var(--ink-soft);margin-top:5px}
+.report__verdict{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--flag);font-weight:600;white-space:nowrap}
+.report .item h3{font-size:16.5px}
+.report .item p{font-size:15px;line-height:1.58}
+.report__more{padding:15px 22px;border-bottom:1px solid var(--rule);
+  font-size:14.5px;line-height:1.6;color:var(--ink-soft);background:var(--field)}
+.report__coverage{padding:17px 22px;font-size:14.5px;line-height:1.62;
+  color:var(--ink-soft);border-left:3px solid var(--gilt);background:var(--paper)}
+.report__coverage strong{color:var(--ink)}
+.tag--flag{color:var(--flag);border-color:#e3c4c4;background:var(--flag-tint)}
+.tag--mod{color:var(--gilt-deep);border-color:#e0d3b8;background:#faf6ee}
+@media(max-width:620px){
+  .switch{flex-direction:column;margin-bottom:0}
+  .sw{margin-right:0;margin-bottom:-1px;text-align:left}
+  .sw--on{border-bottom-color:var(--rule)}
+  .report__head{flex-direction:column;gap:8px}
+}
+
+/* ── Get it ─────────────────────────────────────────────────── */
+.getgrid{display:grid;grid-template-columns:1.15fr .85fr;
+  border:1px solid var(--rule)}
+.get{padding:30px 28px}
+.get--main{border-right:1px solid var(--rule);
+  box-shadow:inset 0 3px 0 var(--statute)}
+.get__n{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-soft);display:block;
+  margin-bottom:16px}
+.get--main .get__n{color:var(--statute)}
+.get p{font-size:15px;line-height:1.6;color:var(--ink-soft);max-width:none}
+.contactline{font-family:var(--mono);font-size:13.5px;margin:0}
+.contactline a{color:var(--ink);text-decoration:none;
+  border-bottom:1px solid var(--gilt);padding-bottom:1px}
+.contactline a:hover{color:var(--gilt-deep)}
+.contactline span{color:var(--rule-strong);margin:0 10px}
+@media(max-width:760px){
+  .getgrid{grid-template-columns:1fr}
+  .get--main{border-right:none;border-bottom:1px solid var(--rule)}
+  .contactline{font-size:12.5px}
+  .contactline span{display:block;height:0;overflow:hidden;margin:6px 0}
+}
+
 /* ── Questions ──────────────────────────────────────────────── */
 details{border-bottom:1px solid var(--rule)}
 details summary{cursor:pointer;list-style:none;padding:18px 0;
@@ -387,11 +448,11 @@ footer .row > .margin .n{color:var(--gilt)}
   <div class="sheet">
     <a class="brand" href="/">Contract<span>Shield</span></a>
     <div class="navlinks">
-      <a href="#how">How it works</a>
+      <a href="#see">See a review</a>
       <a href="#rules">95 rules</a>
       <a href="#word">In Word</a>
       <a href="#pricing">Pricing</a>
-      <a class="navcta" href="mailto:support@contractshield.ca?subject=ContractShield%20%E2%80%94%20free%20statutory%20check">Free check</a>
+      <a class="navcta" href="#get">Download free</a>
     </div>
   </div>
 </nav>
@@ -409,7 +470,8 @@ footer .row > .margin .n{color:var(--gilt)}
           name the provision. AI is used only for what requires judgement.
         </p>
         <p class="rise d3" style="margin-top:26px">
-          <a class="btn btn--solid" href="mailto:support@contractshield.ca?subject=ContractShield%20%E2%80%94%20free%20statutory%20check">Run a free statutory check</a>
+          <a class="btn btn--solid" href="#see">See a full review</a>
+          <a class="btn btn--line" href="#get">Download it free</a>
         </p>
         <p class="fine rise d3" style="font-family:var(--mono);font-size:11.5px;
           letter-spacing:.05em;text-transform:uppercase">
@@ -465,6 +527,193 @@ footer .row > .margin .n{color:var(--gilt)}
       <div class="fig"><b>25</b><span>Contract types<br/>covered</span></div>
       <div class="fig"><b>$0</b><span>To run the<br/>statutory engine</span></div>
       <div class="fig"><b>$9</b><span>For a full review<br/>with AI</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SEE A REVIEW — output on the page, no download, no upload
+     Both examples are real product output. The lease findings and
+     the OREA findings below are what the engine actually returns
+     on those documents; they are fixtures in the test suite.
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band" id="see">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin">
+        <span class="n">Output</span>
+        <span class="cite">Two real<br/>documents</span>
+      </div>
+      <div>
+        <h2>This is what comes back.</h2>
+        <p class="lede" style="margin-bottom:26px">
+          Both are real output on real documents. Nothing here is illustrative.
+        </p>
+
+        <div class="switch" role="tablist" aria-label="Example documents">
+          <button class="sw sw--on" role="tab" aria-selected="true"
+                  aria-controls="ex-lease" id="tab-lease">Residential lease</button>
+          <button class="sw" role="tab" aria-selected="false"
+                  aria-controls="ex-orea" id="tab-orea">OREA Form 100 — scanned</button>
+        </div>
+
+        <!-- ── Lease ── -->
+        <div class="report" id="ex-lease" role="tabpanel" aria-labelledby="tab-lease">
+          <div class="report__head">
+            <div>
+              <span class="report__doc">Residential tenancy agreement · Brampton · 8 clauses</span>
+              <span class="report__type">Detected as: Residential Tenancy Agreement</span>
+            </div>
+            <span class="report__verdict">Do not sign as drafted</span>
+          </div>
+
+          <div class="item">
+            <div class="tags"><span class="tag tag--crit">Critical</span>
+              <span class="tag tag--stat">Verified against statute</span></div>
+            <h3>Damage deposit is void</h3>
+            <p>The only permissible deposit is a rent deposit of up to one
+              month's rent, applied to the last rental period. A security or
+              damage deposit is void and must be returned.</p>
+            <span class="prov">Residential Tenancies Act, 2006 — s.105</span>
+          </div>
+
+          <div class="item">
+            <div class="tags"><span class="tag tag--crit">Critical</span>
+              <span class="tag tag--stat">Verified against statute</span></div>
+            <h3>Late fee is prohibited, and charging it is an offence</h3>
+            <p>Section 134(1) prohibits any fee for late payment of rent. The
+              clause is void, and charging it is an offence under s.234. The
+              lawful remedy is an N4 notice.</p>
+            <span class="prov">Residential Tenancies Act, 2006 — ss.134(1), 234</span>
+          </div>
+
+          <div class="item">
+            <div class="tags"><span class="tag tag--crit">Critical</span>
+              <span class="tag tag--stat">Verified against statute</span></div>
+            <h3>Entry without notice</h3>
+            <p>At least twenty-four hours' written notice is required, stating
+              the reason and the time of entry, between 8 a.m. and 8 p.m.,
+              except in an emergency.</p>
+            <span class="prov">Residential Tenancies Act, 2006 — ss.26–27</span>
+          </div>
+
+          <div class="item">
+            <div class="tags"><span class="tag tag--flag">High</span>
+              <span class="tag tag--stat">Verified against statute</span></div>
+            <h3>Pet prohibition is void</h3>
+            <p>Section 14 voids a lease provision prohibiting animals, subject
+              to a valid condominium declaration. The landlord's remedy is for
+              interference, not prohibition.</p>
+            <span class="prov">Residential Tenancies Act, 2006 — s.14</span>
+          </div>
+
+          <div class="item">
+            <div class="tags"><span class="tag tag--flag">High</span>
+              <span class="tag tag--stat">Verified against statute</span></div>
+            <h3>Repair obligation shifted to the tenant</h3>
+            <p>Maintenance rests with the landlord under s.20, and s.33 limits
+              tenant liability to ordinary cleanliness and wilful or negligent
+              damage.</p>
+            <span class="prov">Residential Tenancies Act, 2006 — ss.20, 33</span>
+          </div>
+
+          <div class="item">
+            <div class="tags"><span class="tag tag--flag">High</span>
+              <span class="tag tag--stat">Verified against statute</span></div>
+            <h3>No reference to the Ontario Standard Lease</h3>
+            <p>Most tenancies entered since April 2018 must use the prescribed
+              Standard Lease. A non-compliant agreement gives the tenant a
+              right to demand it.</p>
+            <span class="prov">O. Reg 9/18</span>
+          </div>
+
+          <div class="report__more">
+            Eight further findings: assignment and subletting, rent increases,
+            vital services, tenant insurance, disputes and LTB jurisdiction,
+            smoking rules, condition inspection, and the missing Standard
+            Lease clause.
+          </div>
+
+          <div class="report__coverage">
+            <strong>Coverage.</strong> Nine rules written for this document
+            type in Ontario, plus general Canadian checks. No blanks or
+            placeholders found. Rules cannot assess a term that has not been
+            filled in, so an unfilled document can read as clean.
+          </div>
+        </div>
+
+        <!-- ── OREA ── -->
+        <div class="report" id="ex-orea" role="tabpanel" aria-labelledby="tab-orea" hidden>
+          <div class="report__head">
+            <div>
+              <span class="report__doc">OREA Form 100 · executed · scanned · 10 pp</span>
+              <span class="report__type">Read by OCR on the machine · Detected as: Purchase Agreement</span>
+            </div>
+            <span class="report__verdict">Review before closing</span>
+          </div>
+
+          <div class="item">
+            <div class="tags"><span class="tag tag--crit">Critical</span>
+              <span class="tag tag--stat">Verified against statute</span></div>
+            <h3>Part-lot conveyance with no consent condition</h3>
+            <p>The parcel is described as part of a road allowance. A
+              conveyance contravening the subdivision control provisions does
+              not create an interest in land. The standard clause on the form
+              makes the agreement effective only if the seller complies — it
+              obliges nobody to obtain the consent.</p>
+            <span class="prov">Planning Act — s.50</span>
+          </div>
+
+          <div class="item">
+            <div class="tags"><span class="tag tag--crit">Critical</span>
+              <span class="tag tag--stat">Verified against statute</span></div>
+            <h3>Requisition date is only partly completed</h3>
+            <p>It reads “the 27 day of …………, 20………”. The day is written and the
+              month and year are blank. A date that cannot be calculated
+              cannot be enforced, and any period measured from it is
+              undefined.</p>
+            <span class="prov">Incomplete date field · requisition</span>
+          </div>
+
+          <div class="item">
+            <div class="tags"><span class="tag tag--flag">High</span>
+              <span class="tag tag--stat">Verified against statute</span></div>
+            <h3>Deposit holder is not named</h3>
+            <p>The trust wording is present but the line naming the holder is
+              blank, so the obligation attaches to nobody. A reader scanning
+              for “in trust” is reassured by wording that has no subject.</p>
+            <span class="prov">TRESA 2002 · O. Reg 536/23</span>
+          </div>
+
+          <div class="item">
+            <div class="tags"><span class="tag tag--mod">Moderate</span>
+              <span class="tag tag--stat">Verified against statute</span></div>
+            <h3>Nominal deposit</h3>
+            <p>A deposit of $1.00 against a purchase price of $20,471.71.
+              Lawful, and it leaves the seller with no practical security: a
+              buyer with nothing at risk can walk away at no cost.</p>
+            <span class="prov">Deposit is 0.005% of the price</span>
+          </div>
+
+          <div class="report__more">
+            Four further findings: schedules to be read against the body, and
+            three clause categories absent from the agreement.
+          </div>
+
+          <div class="report__coverage">
+            <strong>Coverage.</strong> Nineteen rules written for this document
+            type in Ontario, plus general Canadian checks. Read by OCR from a
+            scan, so quoted wording may differ slightly from the page.
+          </div>
+        </div>
+
+        <p class="fine" style="margin-top:22px">
+          The OREA form is a real executed agreement, scanned, with handwritten
+          entries on printed lines. Both documents are fixtures in the test
+          suite, so this output is reproduced on every build.
+        </p>
+      </div>
     </div>
   </div>
 </div>
@@ -928,12 +1177,61 @@ footer .row > .margin .n{color:var(--gilt)}
           <div class="ppack">Credits do not expire · no minimum term</div>
         </div>
         <p style="margin-top:30px">
-          <a class="btn btn--solid" href="mailto:support@contractshield.ca?subject=ContractShield%20%E2%80%94%20free%20statutory%20check">Run a free statutory check</a>
+          <a class="btn btn--solid" href="#get">Download the free check</a>
+          <a class="btn btn--line" href="#see">See a review first</a>
         </p>
-        <p class="fine">
-          Handled personally while this is early. Write, and you will hear
-          back from the person who built it.
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     GET IT — download, or ask
+     ═══════════════════════════════════════════════════════════ -->
+<div class="band" id="get">
+  <div class="sheet">
+    <div class="row">
+      <div class="margin">
+        <span class="n">Install</span>
+        <span class="cite">Windows<br/>One file</span>
+      </div>
+      <div>
+        <h2>Run it on your own<br/>agreement.</h2>
+        <p class="lede" style="margin-bottom:28px">
+          One installer, and it brings its own Python — the machine needs
+          nothing else. Or send the agreement and it comes back reviewed.
         </p>
+
+        <div class="getgrid">
+          <div class="get get--main">
+            <span class="get__n">Free statutory check</span>
+            <a class="btn btn--solid" style="margin:0 0 16px"
+               href="REPLACE_WITH_GITHUB_RELEASE_URL">Download for Windows</a>
+            <p class="fine" style="margin:0">
+              Installs the application, the Word add-in and the right-click
+              menu. Windows will warn that the publisher is unknown because
+              the installer is not code-signed — choose <strong>More
+              info</strong>, then <strong>Run anyway</strong>. Nothing is
+              wrong; Windows distrusts every unsigned installer.
+            </p>
+          </div>
+          <div class="get">
+            <span class="get__n">Full review, or a question</span>
+            <p style="margin:0 0 14px">
+              Send the agreement and it comes back reviewed. Useful if you
+              would rather see the output before installing anything.
+            </p>
+            <p class="contactline">
+              <a href="https://wa.me/REPLACE_WITH_WHATSAPP_NUMBER">WhatsApp</a>
+              <span>·</span>
+              <a href="mailto:support@contractshield.ca?subject=ContractShield%20%E2%80%94%20full%20review">support@contractshield.ca</a>
+            </p>
+            <p class="fine" style="margin:14px 0 0">
+              Answered personally while this is early.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1022,7 +1320,8 @@ footer .row > .margin .n{color:var(--gilt)}
           machine.
         </p>
         <p style="margin-top:24px">
-          <a class="btn btn--solid" href="mailto:support@contractshield.ca?subject=ContractShield%20%E2%80%94%20free%20statutory%20check">Run a free statutory check</a>
+          <a class="btn btn--solid" href="#get">Download it free</a>
+          <a class="btn btn--line" href="#see">Or read a full review first</a>
         </p>
       </div>
     </div>
@@ -1050,6 +1349,25 @@ footer .row > .margin .n{color:var(--gilt)}
   </div>
 </footer>
 
+<script>
+// Two examples, one at a time. No framework, no dependency, and it
+// degrades to both panels visible if scripting is off.
+(function(){
+  var tabs = document.querySelectorAll('.sw');
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){
+        t.classList.remove('sw--on');
+        t.setAttribute('aria-selected','false');
+        document.getElementById(t.getAttribute('aria-controls')).hidden = true;
+      });
+      tab.classList.add('sw--on');
+      tab.setAttribute('aria-selected','true');
+      document.getElementById(tab.getAttribute('aria-controls')).hidden = false;
+    });
+  });
+})();
+</script>
 </body>
 </html>
 
@@ -1096,6 +1414,19 @@ NOT TAKEN, AND WHY:
   is the thing no competitor can match, it costs nothing to
   provide, and it is how someone becomes a user before they become
   a customer. $9 sits beside it, not above it.
+
+TWO PLACEHOLDERS TO REPLACE BEFORE PUBLISHING:
+
+  REPLACE_WITH_GITHUB_RELEASE_URL
+    The direct link to ContractShieldSetup.exe. On GitHub, use the
+    RELEASE asset URL, not the repository page — a visitor who came
+    to download should not land on a source tree. The form is:
+    https://github.com/<you>/<repo>/releases/download/v10.17/ContractShieldSetup.exe
+
+  REPLACE_WITH_WHATSAPP_NUMBER
+    Digits only, with the country code and no plus sign, spaces or
+    dashes. A Canadian mobile becomes 1XXXXXXXXXX, so the finished
+    link reads https://wa.me/1XXXXXXXXXX
 
 STILL OUTSTANDING, AND MORE IMPORTANT THAN ANY OF THIS:
 
